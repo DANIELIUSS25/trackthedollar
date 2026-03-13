@@ -2,16 +2,18 @@
 
 export const APP_NAME = "TrackTheDollar";
 export const APP_DESCRIPTION =
-  "Professional-grade financial dashboard. Real-time market data, macro indicators, and portfolio analytics.";
+  "Institutional-grade macro intelligence platform tracking the U.S. dollar system — national debt, Fed liquidity, fiscal flows, and Treasury operations.";
 export const APP_URL =
   process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+export const APP_TAGLINE = "The U.S. Dollar System. Tracked.";
 
 // Navigation
 export const DASHBOARD_ROUTES = [
-  { label: "Overview", href: "/dashboard", icon: "LayoutDashboard" },
-  { label: "Markets", href: "/markets", icon: "TrendingUp" },
-  { label: "Macro", href: "/macro", icon: "Globe" },
-  { label: "Portfolio", href: "/portfolio", icon: "PieChart" },
+  { label: "Dashboard", href: "/dashboard", icon: "LayoutDashboard" },
+  { label: "National Debt", href: "/debt", icon: "Landmark" },
+  { label: "Liquidity & Fed", href: "/liquidity", icon: "Droplets" },
+  { label: "Fiscal Flows", href: "/fiscal", icon: "Receipt" },
+  { label: "Dollar & Markets", href: "/markets", icon: "TrendingUp" },
   { label: "Alerts", href: "/alerts", icon: "Bell" },
 ] as const;
 
