@@ -6,14 +6,110 @@ import {
   Droplets,
   Receipt,
   TrendingUp,
+  TrendingDown,
   BarChart3,
   Shield,
   Zap,
   ArrowRight,
+  ArrowUpRight,
+  ArrowDownRight,
   Database,
   Clock,
   FileText,
+  ChevronRight,
+  Activity,
+  Lock,
+  Globe,
+  Layers,
+  Target,
+  CheckCircle2,
 } from "lucide-react";
+
+// ─── Static data (replaced by API in production) ─────────────────────────────
+
+const TICKER_ITEMS = [
+  { label: "NAT'L DEBT", value: "$36.218T", change: 0.013 },
+  { label: "FED BS", value: "$6.82T", change: -0.26 },
+  { label: "TGA", value: "$782B", change: 3.03 },
+  { label: "RRP", value: "$147B", change: -7.55 },
+  { label: "NET LIQ", value: "$5.89T", change: -0.49 },
+  { label: "10Y", value: "4.32%", change: -0.69 },
+  { label: "2Y", value: "4.15%", change: -0.24 },
+  { label: "SPREAD", value: "+17 bps", change: 13.3 },
+  { label: "FED FUNDS", value: "4.33%", change: 0 },
+  { label: "CPI", value: "2.8%", change: -3.45 },
+  { label: "M2", value: "$21.67T", change: 0.41 },
+  { label: "DEFICIT", value: "-$1.83T", change: -8.41 },
+  { label: "INTEREST", value: "$1.12T/yr", change: 4.38 },
+];
+
+const DAILY_CHANGES = [
+  { metric: "National Debt", direction: "up" as const, amount: "+$4.7B", context: "Treasury issued $12B in 10Y notes; $7.3B matured", sentiment: "negative" },
+  { metric: "TGA Balance", direction: "up" as const, amount: "+$23B", context: "Tax receipts + auction settlements exceeded outflows", sentiment: "neutral" },
+  { metric: "Reverse Repo", direction: "down" as const, amount: "-$12B", context: "MMFs continue deploying into T-bills as facility drains", sentiment: "positive" },
+  { metric: "10Y Yield", direction: "down" as const, amount: "-3 bps", context: "Flight to safety on weaker payrolls data", sentiment: "neutral" },
+  { metric: "Net Liquidity", direction: "down" as const, amount: "-$29B", context: "QT + rising TGA offset by RRP drain", sentiment: "negative" },
+];
+
+const FEATURED_METRICS = [
+  { label: "Debt Added Today", value: "$4.7B", sub: "≈ $54,398/second", icon: Landmark, color: "text-gold-400", bg: "bg-gold-400/10" },
+  { label: "Interest Per Day", value: "$3.07B", sub: "$1.12T annualized", icon: TrendingUp, color: "text-purple-400", bg: "bg-purple-400/10" },
+  { label: "Days Until Debt Ceiling", value: "47", sub: "Current suspension ends May 2026", icon: Target, color: "text-negative", bg: "bg-negative/10" },
+  { label: "Debt Per Citizen", value: "$108,247", sub: "334M population", icon: DollarSign, color: "text-info", bg: "bg-info/10" },
+];
+
+const FLOW_SUMMARY = {
+  inflows: [
+    { label: "Individual Income Tax", value: "$2.43T", pct: 49.6, color: "#f0b429" },
+    { label: "Payroll Taxes", value: "$1.68T", pct: 34.3, color: "#3b82f6" },
+    { label: "Corporate Tax", value: "$420B", pct: 8.6, color: "#16c784" },
+    { label: "Other Revenue", value: "$370B", pct: 7.5, color: "#6b7a99" },
+  ],
+  outflows: [
+    { label: "Health (Medicare/Medicaid)", value: "$1.68T", pct: 26.9, color: "#ea3943" },
+    { label: "Social Security", value: "$1.46T", pct: 23.4, color: "#f0b429" },
+    { label: "Interest on Debt", value: "$1.12T", pct: 17.9, color: "#8b5cf6" },
+    { label: "National Defense", value: "$886B", pct: 14.2, color: "#3b82f6" },
+    { label: "Other", value: "$1.10T", pct: 17.6, color: "#6b7a99" },
+  ],
+};
+
+const RESEARCH = [
+  {
+    category: "FISCAL",
+    color: "text-positive",
+    bg: "bg-positive/10",
+    title: "Interest Expense Surpasses Defense Spending",
+    summary: "Annual interest payments ($1.12T) now exceed the entire defense budget ($886B) for the first time — consuming 17.9% of all federal spending.",
+    metric: "$1.12T vs $886B",
+    date: "Mar 10",
+  },
+  {
+    category: "LIQUIDITY",
+    color: "text-info",
+    bg: "bg-info/10",
+    title: "Reverse Repo at $147B: Liquidity Buffer Nearly Gone",
+    summary: "Down from a $2.55T peak in Dec 2022. When it hits zero, QT drains bank reserves directly — raising funding stress risk.",
+    metric: "$147B remaining",
+    date: "Mar 8",
+  },
+  {
+    category: "DEBT",
+    color: "text-gold-400",
+    bg: "bg-gold-400/10",
+    title: "Debt-to-GDP at 127.4%: Approaching WWII Levels",
+    summary: "The only time the U.S. exceeded this ratio was 1946 (118.9%). Unlike post-war, today's trajectory is accelerating. CBO projects 156% by 2034.",
+    metric: "127.4% of GDP",
+    date: "Mar 5",
+  },
+];
+
+const FORECASTS = [
+  { metric: "National Debt", now: "$36.2T", projected: "$39.4T", horizon: "End FY2027", source: "CBO", trend: "up" as const },
+  { metric: "Interest/Year", now: "$1.12T", projected: "$1.38T", horizon: "FY2027", source: "CBO", trend: "up" as const },
+  { metric: "Fed Balance Sheet", now: "$6.82T", projected: "$6.2T", horizon: "End of QT", source: "FOMC", trend: "down" as const },
+  { metric: "Fed Funds Rate", now: "4.33%", projected: "3.58%", horizon: "End 2026", source: "Dot Plot", trend: "down" as const },
+];
 
 export default function LandingPage() {
   return (
@@ -29,12 +125,18 @@ export default function LandingPage() {
               TrackThe<span className="text-primary">Dollar</span>
             </span>
           </Link>
+          <nav className="hidden items-center gap-6 md:flex">
+            <Link href="#features" className="text-xs font-medium text-muted-foreground transition-colors hover:text-foreground">Features</Link>
+            <Link href="#flows" className="text-xs font-medium text-muted-foreground transition-colors hover:text-foreground">Dollar Flows</Link>
+            <Link href="#research" className="text-xs font-medium text-muted-foreground transition-colors hover:text-foreground">Research</Link>
+            <Link href="/methodology" className="text-xs font-medium text-muted-foreground transition-colors hover:text-foreground">Methodology</Link>
+          </nav>
           <div className="flex items-center gap-3">
             <Link
-              href="/methodology"
+              href="/login"
               className="hidden text-xs font-medium text-muted-foreground transition-colors hover:text-foreground sm:block"
             >
-              Methodology
+              Sign In
             </Link>
             <Link
               href="/dashboard"
@@ -49,21 +151,16 @@ export default function LandingPage() {
       {/* ─── Ticker Strip ──────────────────────────────────────── */}
       <div className="ticker-container mask-fade-x border-b border-border bg-card/40">
         <div className="ticker-track flex items-center whitespace-nowrap py-2.5">
-          {TICKER_ITEMS.map((item, i) => (
-            <div key={`a-${i}`} className="flex items-center">
+          {[...TICKER_ITEMS, ...TICKER_ITEMS].map((item, i) => (
+            <div key={i} className="flex items-center">
               <div className="flex items-center gap-2 px-6">
                 <span className="label-sm text-muted-foreground">{item.label}</span>
                 <span className="font-data text-xs font-medium text-foreground">{item.value}</span>
-              </div>
-              <div className="h-3 w-px bg-border" />
-            </div>
-          ))}
-          {/* Duplicate for seamless loop */}
-          {TICKER_ITEMS.map((item, i) => (
-            <div key={`b-${i}`} className="flex items-center">
-              <div className="flex items-center gap-2 px-6">
-                <span className="label-sm text-muted-foreground">{item.label}</span>
-                <span className="font-data text-xs font-medium text-foreground">{item.value}</span>
+                {item.change !== 0 && (
+                  <span className={`font-data text-[10px] ${item.change > 0 ? "text-positive" : "text-negative"}`}>
+                    {item.change > 0 ? "+" : ""}{item.change.toFixed(1)}%
+                  </span>
+                )}
               </div>
               <div className="h-3 w-px bg-border" />
             </div>
@@ -73,14 +170,13 @@ export default function LandingPage() {
 
       {/* ─── Hero ──────────────────────────────────────────────── */}
       <section className="relative overflow-hidden border-b border-border">
-        {/* Subtle grid pattern */}
         <div className="absolute inset-0 bg-grid opacity-[0.03]" />
-        {/* Gold radial glow */}
         <div className="absolute inset-0 glow-gold" />
+        <div className="absolute inset-0 bg-dots opacity-[0.02]" />
 
         <div className="relative mx-auto max-w-7xl px-6 pb-20 pt-24">
           {/* Badge */}
-          <div className="mb-8 flex justify-center">
+          <div className="mb-8 flex justify-center animate-reveal">
             <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5">
               <Zap className="h-3 w-3 text-primary" />
               <span className="label-md text-primary">Institutional-Grade Macro Intelligence</span>
@@ -88,18 +184,18 @@ export default function LandingPage() {
           </div>
 
           {/* Headline */}
-          <h1 className="mx-auto max-w-4xl text-center text-display-xl font-bold tracking-tight md:text-[3.5rem] lg:text-[4rem]">
+          <h1 className="animate-reveal stagger-1 mx-auto max-w-4xl text-center text-display-xl font-bold tracking-tight md:text-[3.5rem] lg:text-[4rem]">
             The U.S. Dollar System.{" "}
-            <span className="text-primary">Tracked.</span>
+            <span className="text-gradient-gold">Tracked.</span>
           </h1>
 
-          <p className="mx-auto mt-6 max-w-2xl text-center text-base leading-relaxed text-muted-foreground md:text-lg">
+          <p className="animate-reveal stagger-2 mx-auto mt-6 max-w-2xl text-center text-base leading-relaxed text-muted-foreground md:text-lg">
             Real-time national debt, Treasury operations, Fed liquidity, and fiscal flows
-            — structured and contextualized in one premium dashboard built for the public internet.
+            — structured and contextualized for investors, researchers, and citizens who demand transparency.
           </p>
 
           {/* CTAs */}
-          <div className="mt-10 flex items-center justify-center gap-4">
+          <div className="animate-reveal stagger-3 mt-10 flex items-center justify-center gap-4">
             <Link
               href="/dashboard"
               className="group inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-3 text-sm font-medium text-primary-foreground shadow-glow transition-all hover:bg-gold-500 hover:shadow-glow-strong"
@@ -108,20 +204,20 @@ export default function LandingPage() {
               <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
             </Link>
             <Link
-              href="#pillars"
+              href="#features"
               className="inline-flex items-center gap-2 rounded-lg border border-border px-6 py-3 text-sm font-medium text-foreground transition-colors hover:border-primary/30 hover:bg-card"
             >
-              See Features
+              See What&apos;s Tracked
             </Link>
           </div>
 
-          {/* ─── Hero Stats ──────────────────────────────────── */}
-          <div className="mx-auto mt-16 max-w-4xl">
+          {/* ─── Hero Live Stats ────────────────────────────── */}
+          <div className="animate-reveal stagger-4 mx-auto mt-16 max-w-5xl">
             <div className="panel-hero p-6 md:p-8">
-              <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
+              <div className="grid grid-cols-1 gap-8 md:grid-cols-5">
                 <HeroStatBlock
                   label="National Debt"
-                  value="$36.2T+"
+                  value="$36.22T"
                   subValue="+$4.7B today"
                   status="live"
                   statusLabel="Treasury"
@@ -138,9 +234,17 @@ export default function LandingPage() {
                 <HeroStatBlock
                   label="Annual Deficit"
                   value="-$1.83T"
-                  subValue="FY2026 Year-to-Date"
+                  subValue="FY2026 YTD"
                   status="recent"
                   statusLabel="FiscalData"
+                />
+                <div className="hidden h-full w-px bg-border md:block" />
+                <HeroStatBlock
+                  label="Interest/Year"
+                  value="$1.12T"
+                  subValue="+$47B from prior year"
+                  status="recent"
+                  statusLabel="Treasury"
                 />
               </div>
             </div>
@@ -148,40 +252,90 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ─── Data Sources Bar ──────────────────────────────────── */}
-      <section className="border-b border-border bg-card/30 py-6">
+      {/* ─── Live Stat Cards ─────────────────────────────────── */}
+      <section className="border-b border-border py-12">
         <div className="mx-auto max-w-7xl px-6">
-          <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-            <DataSourceItem
-              icon={<Database className="h-4 w-4" />}
-              name="U.S. Treasury"
-              coverage="National Debt, Auctions"
-              frequency="Daily"
-            />
-            <DataSourceItem
-              icon={<BarChart3 className="h-4 w-4" />}
-              name="Federal Reserve (FRED)"
-              coverage="Fed Operations, Rates"
-              frequency="Weekly"
-            />
-            <DataSourceItem
-              icon={<Receipt className="h-4 w-4" />}
-              name="FiscalData.gov"
-              coverage="Receipts, Outlays, TGA"
-              frequency="Monthly"
-            />
-            <DataSourceItem
-              icon={<FileText className="h-4 w-4" />}
-              name="Congressional Budget Office"
-              coverage="Projections"
-              frequency="Quarterly"
-            />
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {FEATURED_METRICS.map((m) => {
+              const Icon = m.icon;
+              return (
+                <div key={m.label} className="panel p-5 transition-all duration-200 hover:shadow-panel-raised">
+                  <div className="flex items-center gap-3">
+                    <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ${m.bg} ${m.color}`}>
+                      <Icon className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <p className="label-sm text-muted-foreground">{m.label}</p>
+                      <p className="font-data text-data-lg font-bold text-foreground">{m.value}</p>
+                      <p className="font-data text-2xs text-muted-foreground">{m.sub}</p>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* ─── What Changed Today ──────────────────────────────── */}
+      <section className="border-b border-border py-16">
+        <div className="mx-auto max-w-7xl px-6">
+          <div className="mb-8 flex items-center gap-3">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
+              <Activity className="h-4 w-4 text-primary" />
+            </div>
+            <div>
+              <h2 className="text-display-md font-bold tracking-tight">What Changed Today</h2>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Key movements across the dollar system in the last 24 hours.
+              </p>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            {DAILY_CHANGES.map((change, i) => (
+              <div
+                key={i}
+                className="group flex items-start gap-4 rounded-lg border border-transparent p-4 transition-all duration-200 hover:border-border hover:bg-card/50"
+              >
+                <div className={`mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full ${
+                  change.sentiment === "positive" ? "bg-positive-subtle" : change.sentiment === "negative" ? "bg-negative-subtle" : "bg-muted"
+                }`}>
+                  {change.direction === "up" ? (
+                    <ArrowUpRight className={`h-4 w-4 ${change.sentiment === "positive" ? "text-positive" : change.sentiment === "negative" ? "text-negative" : "text-muted-foreground"}`} />
+                  ) : (
+                    <ArrowDownRight className={`h-4 w-4 ${change.sentiment === "positive" ? "text-positive" : change.sentiment === "negative" ? "text-negative" : "text-muted-foreground"}`} />
+                  )}
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm text-foreground">
+                    <span className="font-semibold">{change.metric}</span>{" "}
+                    <span className={`font-data font-medium ${
+                      change.sentiment === "positive" ? "text-positive" : change.sentiment === "negative" ? "text-negative" : "text-foreground"
+                    }`}>
+                      {change.amount}
+                    </span>
+                  </p>
+                  <p className="mt-0.5 text-xs text-muted-foreground">{change.context}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-6 text-center">
+            <Link
+              href="/dashboard"
+              className="inline-flex items-center gap-1.5 text-xs font-medium text-primary transition-colors hover:text-gold-300"
+            >
+              See full daily briefing
+              <ChevronRight className="h-3 w-3" />
+            </Link>
           </div>
         </div>
       </section>
 
       {/* ─── Four Pillars ──────────────────────────────────────── */}
-      <section id="pillars" className="border-b border-border py-20">
+      <section id="features" className="border-b border-border py-20">
         <div className="mx-auto max-w-7xl px-6">
           <div className="mb-12 text-center">
             <h2 className="text-display-md font-bold tracking-tight">
@@ -198,57 +352,245 @@ export default function LandingPage() {
               title="National Debt"
               description="Total public debt outstanding, debt composition, growth trajectory, Treasury auction results, and debt-to-GDP ratio."
               href="/debt"
-              metrics={[
-                "Total debt outstanding",
-                "Debt held by public vs. intragovernmental",
-                "Daily / monthly / yearly growth rate",
-                "Debt-to-GDP ratio",
-              ]}
+              metrics={["Total debt outstanding", "Debt held by public vs. intragovernmental", "Daily / monthly / yearly growth rate", "Debt-to-GDP ratio"]}
               color="text-gold-400"
               bgColor="bg-gold-400/10"
+              stat="$36.22T"
             />
             <PillarCard
               icon={<Droplets className="h-6 w-6" />}
               title="Liquidity & Fed"
               description="Fed balance sheet, Treasury General Account, reverse repo facility, and the net liquidity formula that drives markets."
               href="/liquidity"
-              metrics={[
-                "Net Liquidity = Fed BS − TGA − RRP",
-                "Quantitative Tightening pace",
-                "TGA cash balance",
-                "Reverse repo facility drainage",
-              ]}
+              metrics={["Net Liquidity = Fed BS − TGA − RRP", "Quantitative Tightening pace", "TGA cash balance", "Reverse repo facility drainage"]}
               color="text-info"
               bgColor="bg-info/10"
+              stat="$5.89T"
             />
             <PillarCard
               icon={<Receipt className="h-6 w-6" />}
               title="Fiscal Flows"
               description="Federal receipts, outlays, budget deficit tracking, spending by category, revenue sources, and interest expense trajectory."
               href="/fiscal"
-              metrics={[
-                "Monthly & FYTD receipts vs. outlays",
-                "Spending by category breakdown",
-                "Revenue by source (individual, corporate)",
-                "Interest expense trajectory",
-              ]}
+              metrics={["Monthly & FYTD receipts vs. outlays", "Spending by category breakdown", "Revenue by source", "Interest expense trajectory"]}
               color="text-positive"
               bgColor="bg-positive/10"
+              stat="-$1.83T"
             />
             <PillarCard
               icon={<TrendingUp className="h-6 w-6" />}
               title="Dollar & Markets"
               description="Treasury yields, yield curve dynamics, money supply, inflation indicators, and the market pulse of the dollar system."
               href="/markets"
-              metrics={[
-                "10Y & 2Y Treasury yields",
-                "Yield curve spread (10Y−2Y)",
-                "M2 money supply",
-                "Fed Funds rate & CPI",
-              ]}
+              metrics={["10Y & 2Y Treasury yields", "Yield curve spread (10Y−2Y)", "M2 money supply", "Fed Funds rate & CPI"]}
               color="text-purple-400"
               bgColor="bg-purple-400/10"
+              stat="4.32%"
             />
+          </div>
+        </div>
+      </section>
+
+      {/* ─── Dollar Flow Visualization ────────────────────────── */}
+      <section id="flows" className="relative border-b border-border py-20">
+        <div className="absolute inset-0 glow-gold-center" />
+        <div className="relative mx-auto max-w-7xl px-6">
+          <div className="mb-12 text-center">
+            <h2 className="text-display-md font-bold tracking-tight">
+              Where Every Dollar Comes From — and Goes
+            </h2>
+            <p className="mt-3 max-w-2xl mx-auto text-muted-foreground">
+              Annual federal revenue vs. spending. The gap is funded by new Treasury issuance, compounding the national debt.
+            </p>
+          </div>
+
+          <div className="panel-hero p-6 md:p-8">
+            <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
+              {/* Inflows */}
+              <div>
+                <div className="mb-4 flex items-center gap-2">
+                  <div className="flex h-7 w-7 items-center justify-center rounded-md bg-positive/10">
+                    <ArrowUpRight className="h-4 w-4 text-positive" />
+                  </div>
+                  <div>
+                    <p className="label-md text-muted-foreground">Revenue (Inflows)</p>
+                    <p className="font-data text-sm font-semibold text-foreground">$4.90T annually</p>
+                  </div>
+                </div>
+                <div className="space-y-3">
+                  {FLOW_SUMMARY.inflows.map((item) => (
+                    <FlowBar key={item.label} {...item} />
+                  ))}
+                </div>
+              </div>
+
+              {/* Outflows */}
+              <div>
+                <div className="mb-4 flex items-center gap-2">
+                  <div className="flex h-7 w-7 items-center justify-center rounded-md bg-negative/10">
+                    <ArrowDownRight className="h-4 w-4 text-negative" />
+                  </div>
+                  <div>
+                    <p className="label-md text-muted-foreground">Spending (Outflows)</p>
+                    <p className="font-data text-sm font-semibold text-foreground">$6.25T annually</p>
+                  </div>
+                </div>
+                <div className="space-y-3">
+                  {FLOW_SUMMARY.outflows.map((item) => (
+                    <FlowBar key={item.label} {...item} />
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Deficit callout */}
+            <div className="mt-8 rounded-lg bg-negative/5 border border-negative/10 px-5 py-4">
+              <div className="flex flex-col items-center justify-between gap-3 sm:flex-row">
+                <div>
+                  <p className="text-sm font-semibold text-foreground">Annual Deficit</p>
+                  <p className="text-xs text-muted-foreground">
+                    Spending exceeds revenue — the gap is funded by issuing new Treasury securities.
+                  </p>
+                </div>
+                <div className="text-center sm:text-right">
+                  <p className="font-data text-data-xl font-bold text-negative">-$1.83T</p>
+                  <p className="text-2xs text-muted-foreground">FY2026 year-to-date</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ─── Research Summary ─────────────────────────────────── */}
+      <section id="research" className="border-b border-border py-20">
+        <div className="mx-auto max-w-7xl px-6">
+          <div className="mb-10 flex items-center justify-between">
+            <div>
+              <h2 className="text-display-md font-bold tracking-tight">Research & Analysis</h2>
+              <p className="mt-2 text-muted-foreground">Data-driven insights from the latest government releases.</p>
+            </div>
+            <Link
+              href="/dashboard"
+              className="hidden items-center gap-1.5 text-xs font-medium text-primary transition-colors hover:text-gold-300 sm:flex"
+            >
+              View all <ChevronRight className="h-3 w-3" />
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+            {RESEARCH.map((item, i) => (
+              <article
+                key={i}
+                className="group panel flex flex-col p-5 transition-all duration-200 hover:border-primary/20 hover:shadow-panel-raised"
+              >
+                <div className="mb-3 flex items-center gap-2">
+                  <span className={`label-sm ${item.color}`}>{item.category}</span>
+                  <span className="text-2xs text-muted-foreground">{item.date}</span>
+                  <span className="ml-auto rounded-md border border-border bg-surface-2 px-2 py-0.5 font-data text-2xs text-foreground">
+                    {item.metric}
+                  </span>
+                </div>
+                <h3 className="text-sm font-semibold text-foreground">{item.title}</h3>
+                <p className="mt-2 flex-1 text-xs leading-relaxed text-muted-foreground">
+                  {item.summary}
+                </p>
+                <div className="mt-4 border-t border-border pt-3">
+                  <span className="inline-flex items-center gap-1 text-2xs font-medium text-primary opacity-0 transition-opacity group-hover:opacity-100">
+                    Read analysis <ArrowRight className="h-2.5 w-2.5" />
+                  </span>
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ─── Forecast Teaser ──────────────────────────────────── */}
+      <section className="border-b border-border py-20">
+        <div className="mx-auto max-w-7xl px-6">
+          <div className="mb-10 text-center">
+            <h2 className="text-display-md font-bold tracking-tight">Where It&apos;s Headed</h2>
+            <p className="mt-3 text-muted-foreground">
+              CBO and FOMC projections for key dollar system metrics.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {FORECASTS.map((f, i) => (
+              <div
+                key={i}
+                className="panel overflow-hidden p-5 transition-all duration-200 hover:border-primary/20 hover:shadow-panel-raised"
+              >
+                <div className="mb-3 flex items-center justify-between">
+                  <span className="label-md text-muted-foreground">{f.metric}</span>
+                  {f.trend === "up" ? (
+                    <TrendingUp className="h-4 w-4 text-negative/60" />
+                  ) : (
+                    <TrendingDown className="h-4 w-4 text-positive/60" />
+                  )}
+                </div>
+                <div className="flex items-center gap-3">
+                  <div>
+                    <p className="text-2xs text-muted-foreground">Current</p>
+                    <p className="font-data text-sm font-semibold text-foreground">{f.now}</p>
+                  </div>
+                  <ArrowRight className="h-3.5 w-3.5 shrink-0 text-muted-foreground/30" />
+                  <div>
+                    <p className="text-2xs text-muted-foreground">{f.horizon}</p>
+                    <p className={`font-data text-sm font-semibold ${f.trend === "up" ? "text-negative" : "text-positive"}`}>
+                      {f.projected}
+                    </p>
+                  </div>
+                </div>
+                <div className="mt-3 border-t border-border pt-2">
+                  <span className="text-2xs text-muted-foreground/60">Source: {f.source}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ─── Trust / Source Strip ─────────────────────────────── */}
+      <section className="border-b border-border bg-card/30 py-8">
+        <div className="mx-auto max-w-7xl px-6">
+          <div className="mb-6 text-center">
+            <p className="label-lg text-muted-foreground">Sourced from official U.S. government data</p>
+          </div>
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+            <DataSourceItem
+              icon={<Database className="h-4 w-4" />}
+              name="U.S. Treasury"
+              coverage="National Debt, Auctions, DTS"
+              frequency="Daily"
+            />
+            <DataSourceItem
+              icon={<BarChart3 className="h-4 w-4" />}
+              name="Federal Reserve (FRED)"
+              coverage="Fed Operations, Rates, M2"
+              frequency="Weekly"
+            />
+            <DataSourceItem
+              icon={<Receipt className="h-4 w-4" />}
+              name="FiscalData.gov"
+              coverage="Receipts, Outlays, TGA"
+              frequency="Daily / Monthly"
+            />
+            <DataSourceItem
+              icon={<FileText className="h-4 w-4" />}
+              name="Congressional Budget Office"
+              coverage="Projections, Baselines"
+              frequency="Quarterly"
+            />
+          </div>
+          {/* Trust indicators */}
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-6">
+            <TrustBadge icon={<Shield className="h-3.5 w-3.5" />} label="Non-Partisan" />
+            <TrustBadge icon={<Lock className="h-3.5 w-3.5" />} label="No Financial Advice" />
+            <TrustBadge icon={<Globe className="h-3.5 w-3.5" />} label="Open Methodology" />
+            <TrustBadge icon={<Layers className="h-3.5 w-3.5" />} label="Source-Backed" />
+            <TrustBadge icon={<Clock className="h-3.5 w-3.5" />} label="Real-Time Updates" />
           </div>
         </div>
       </section>
@@ -268,25 +610,26 @@ export default function LandingPage() {
             <DiffCard
               icon={<BarChart3 className="h-5 w-5" />}
               title="Connected Data"
-              description="See how debt issuance affects the TGA, which affects liquidity, which affects markets. No other platform connects these flows in a single view."
+              description="See how debt issuance affects the TGA, which affects liquidity, which affects markets. No other platform connects these flows."
             />
             <DiffCard
               icon={<Shield className="h-5 w-5" />}
-              title="Non-Partisan & Data-Driven"
-              description="No political spin. No conspiracy framing. Structured, sourced, government data presented with institutional rigor and full transparency."
+              title="Non-Partisan & Rigorous"
+              description="No political spin. Structured, sourced, government data presented with institutional rigor and full transparency."
             />
             <DiffCard
               icon={<Clock className="h-5 w-5" />}
               title="Source-Backed Trust"
-              description="Every number shows its source, update frequency, and data freshness. Confidence indicators on every metric. Full methodology documentation."
+              description="Every number shows its source, update frequency, and data freshness. Confidence indicators on every metric."
             />
           </div>
         </div>
       </section>
 
-      {/* ─── Final CTA ─────────────────────────────────────────── */}
+      {/* ─── Premium CTA ──────────────────────────────────────── */}
       <section className="relative overflow-hidden py-24">
         <div className="absolute inset-0 glow-gold-bottom" />
+        <div className="absolute inset-0 bg-dots opacity-[0.02]" />
         <div className="relative mx-auto max-w-7xl px-6 text-center">
           <h2 className="text-display-md font-bold tracking-tight">
             Start Tracking the Dollar System
@@ -295,7 +638,7 @@ export default function LandingPage() {
             Free tier includes all core metrics and charts. Pro unlocks full historical data,
             custom alerts, and AI-powered intelligence briefings.
           </p>
-          <div className="mt-8">
+          <div className="mt-8 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
             <Link
               href="/dashboard"
               className="group inline-flex items-center gap-2 rounded-lg bg-primary px-8 py-3.5 text-sm font-medium text-primary-foreground shadow-glow transition-all hover:bg-gold-500 hover:shadow-glow-strong"
@@ -303,33 +646,68 @@ export default function LandingPage() {
               Open Dashboard — Free
               <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
             </Link>
+            <Link
+              href="/upgrade"
+              className="inline-flex items-center gap-2 rounded-lg border border-border px-8 py-3.5 text-sm font-medium text-foreground transition-colors hover:border-primary/30 hover:bg-card"
+            >
+              View Pro Plans
+            </Link>
+          </div>
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
+            <PerkItem label="No credit card required" />
+            <PerkItem label="All core data free" />
+            <PerkItem label="Cancel anytime" />
           </div>
         </div>
       </section>
 
       {/* ─── Footer ────────────────────────────────────────────── */}
-      <footer className="border-t border-border bg-card/30 py-8">
-        <div className="mx-auto max-w-7xl px-6">
-          <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
-            <div className="flex items-center gap-2">
-              <div className="flex h-6 w-6 items-center justify-center rounded-md bg-primary">
-                <DollarSign className="h-3.5 w-3.5 text-primary-foreground" />
+      <footer className="border-t border-border bg-card/30">
+        <div className="mx-auto max-w-7xl px-6 py-12">
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
+            {/* Brand */}
+            <div className="md:col-span-2">
+              <div className="flex items-center gap-2.5">
+                <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary">
+                  <DollarSign className="h-3.5 w-3.5 text-primary-foreground" />
+                </div>
+                <span className="text-sm font-semibold">
+                  TrackThe<span className="text-primary">Dollar</span>.com
+                </span>
               </div>
-              <span className="text-xs font-medium">
-                TrackThe<span className="text-primary">Dollar</span>.com
-              </span>
+              <p className="mt-3 max-w-sm text-xs leading-relaxed text-muted-foreground">
+                Institutional-grade macro intelligence for the public internet.
+                Real-time data from U.S. Treasury, Federal Reserve, and public government APIs.
+              </p>
             </div>
-            <div className="flex items-center gap-6">
-              <Link
-                href="/methodology"
-                className="text-2xs text-muted-foreground transition-colors hover:text-foreground"
-              >
-                Methodology
-              </Link>
-              <span className="text-2xs text-muted-foreground">
-                Data from U.S. Treasury, Federal Reserve, and public government APIs. Not financial advice.
-              </span>
+
+            {/* Links */}
+            <div>
+              <p className="label-md mb-3 text-muted-foreground">Platform</p>
+              <ul className="space-y-2">
+                <li><Link href="/dashboard" className="text-xs text-muted-foreground transition-colors hover:text-foreground">Dashboard</Link></li>
+                <li><Link href="/debt" className="text-xs text-muted-foreground transition-colors hover:text-foreground">National Debt</Link></li>
+                <li><Link href="/liquidity" className="text-xs text-muted-foreground transition-colors hover:text-foreground">Liquidity & Fed</Link></li>
+                <li><Link href="/fiscal" className="text-xs text-muted-foreground transition-colors hover:text-foreground">Fiscal Flows</Link></li>
+              </ul>
             </div>
+            <div>
+              <p className="label-md mb-3 text-muted-foreground">Resources</p>
+              <ul className="space-y-2">
+                <li><Link href="/methodology" className="text-xs text-muted-foreground transition-colors hover:text-foreground">Methodology</Link></li>
+                <li><Link href="/upgrade" className="text-xs text-muted-foreground transition-colors hover:text-foreground">Pricing</Link></li>
+                <li><Link href="/login" className="text-xs text-muted-foreground transition-colors hover:text-foreground">Sign In</Link></li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="mt-10 flex flex-col items-center justify-between gap-3 border-t border-border pt-6 md:flex-row">
+            <span className="text-2xs text-muted-foreground">
+              &copy; {new Date().getFullYear()} TrackTheDollar.com. All data sourced from public U.S. government APIs.
+            </span>
+            <span className="text-2xs text-muted-foreground/60">
+              Not financial advice. For informational purposes only.
+            </span>
           </div>
         </div>
       </footer>
@@ -337,21 +715,7 @@ export default function LandingPage() {
   );
 }
 
-// ─── Static ticker data (replaced by API in production) ────────
-
-const TICKER_ITEMS = [
-  { label: "NAT'L DEBT", value: "$36.218T" },
-  { label: "FED BS", value: "$6.82T" },
-  { label: "TGA", value: "$782B" },
-  { label: "RRP", value: "$147B" },
-  { label: "NET LIQ", value: "$5.89T" },
-  { label: "10Y", value: "4.32%" },
-  { label: "2Y", value: "4.15%" },
-  { label: "FED FUNDS", value: "4.33%" },
-  { label: "DEFICIT/YR", value: "-$1.83T" },
-];
-
-// ─── Sub-components ────────────────────────────────────────────
+// ─── Sub-components ────────────────────────────────────────────────────────────
 
 function HeroStatBlock({
   label,
@@ -369,9 +733,7 @@ function HeroStatBlock({
   return (
     <div className="flex flex-col items-center text-center">
       <span className="label-md mb-2 text-muted-foreground">{label}</span>
-      <span className="font-data text-data-hero font-semibold text-foreground">
-        {value}
-      </span>
+      <span className="font-data text-data-hero font-semibold text-foreground">{value}</span>
       <span className="mt-1.5 font-data text-xs text-muted-foreground">{subValue}</span>
       <div className="mt-2 flex items-center gap-1.5">
         <span className={status === "live" ? "status-live" : "status-recent"} />
@@ -414,6 +776,7 @@ function PillarCard({
   metrics,
   color,
   bgColor,
+  stat,
 }: {
   icon: React.ReactNode;
   title: string;
@@ -422,26 +785,32 @@ function PillarCard({
   metrics: string[];
   color: string;
   bgColor: string;
+  stat: string;
 }) {
   return (
     <Link
       href={href}
-      className="group panel flex flex-col p-6 transition-all duration-standard hover:border-primary/20 hover:shadow-panel-raised"
+      className="group panel flex flex-col p-6 transition-all duration-200 hover:border-primary/20 hover:shadow-panel-raised"
     >
-      <div className={`mb-4 flex h-11 w-11 items-center justify-center rounded-lg ${bgColor} ${color} transition-colors`}>
-        {icon}
+      <div className="flex items-start justify-between">
+        <div className={`mb-4 flex h-11 w-11 items-center justify-center rounded-lg ${bgColor} ${color} transition-colors`}>
+          {icon}
+        </div>
+        <span className="font-data text-lg font-bold text-muted-foreground/30 transition-colors group-hover:text-muted-foreground/60">
+          {stat}
+        </span>
       </div>
       <h3 className="text-lg font-semibold text-foreground">{title}</h3>
       <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{description}</p>
       <ul className="mt-4 flex-1 space-y-2">
         {metrics.map((m) => (
           <li key={m} className="flex items-start gap-2 text-xs text-muted-foreground">
-            <div className={`mt-1.5 h-1 w-1 shrink-0 rounded-full ${bgColor.replace("/10", "")}`} />
+            <CheckCircle2 className={`mt-0.5 h-3 w-3 shrink-0 ${color} opacity-60`} />
             <span>{m}</span>
           </li>
         ))}
       </ul>
-      <div className="mt-5 pt-4 border-t border-border">
+      <div className="mt-5 border-t border-border pt-4">
         <span className="inline-flex items-center gap-1.5 text-xs font-medium text-primary transition-colors group-hover:text-gold-300">
           Explore
           <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-0.5" />
@@ -461,12 +830,50 @@ function DiffCard({
   description: string;
 }) {
   return (
-    <div className="panel p-5">
+    <div className="panel p-5 transition-all duration-200 hover:shadow-panel-raised">
       <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary">
         {icon}
       </div>
       <h3 className="text-sm font-semibold text-foreground">{title}</h3>
       <p className="mt-2 text-xs leading-relaxed text-muted-foreground">{description}</p>
+    </div>
+  );
+}
+
+function FlowBar({ label, value, pct, color }: { label: string; value: string; pct: number; color: string }) {
+  return (
+    <div>
+      <div className="mb-1 flex items-center justify-between">
+        <span className="text-xs text-foreground/80">{label}</span>
+        <div className="flex items-center gap-2">
+          <span className="font-data text-2xs text-muted-foreground">{pct}%</span>
+          <span className="font-data text-xs font-medium text-foreground">{value}</span>
+        </div>
+      </div>
+      <div className="h-2 w-full overflow-hidden rounded-full bg-surface-2">
+        <div
+          className="h-full rounded-full transition-all duration-700 ease-out"
+          style={{ width: `${pct}%`, backgroundColor: color, opacity: 0.8 }}
+        />
+      </div>
+    </div>
+  );
+}
+
+function TrustBadge({ icon, label }: { icon: React.ReactNode; label: string }) {
+  return (
+    <div className="flex items-center gap-1.5 text-muted-foreground">
+      {icon}
+      <span className="text-2xs font-medium">{label}</span>
+    </div>
+  );
+}
+
+function PerkItem({ label }: { label: string }) {
+  return (
+    <div className="flex items-center gap-1.5">
+      <CheckCircle2 className="h-3.5 w-3.5 text-positive" />
+      <span className="text-xs text-muted-foreground">{label}</span>
     </div>
   );
 }
