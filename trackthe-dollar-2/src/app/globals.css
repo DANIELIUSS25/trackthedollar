@@ -1,4 +1,4 @@
-/* src/app/globals.css */
+/* src/app/globals.css — TrackTheDollar Design System */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -25,30 +25,42 @@
     --border: 220 15% 85%;
     --input: 220 15% 85%;
     --ring: 39 96% 53%;
-    --radius: 0.375rem;
+    --radius: 0.5rem;
+
+    /* Surface layers (light) */
+    --surface-0: 220 20% 97%;
+    --surface-1: 0 0% 100%;
+    --surface-2: 220 15% 96%;
+    --surface-3: 220 15% 92%;
   }
 
   .dark {
-    /* Bloomberg-inspired dark theme */
-    --background: 220 30% 5%;
-    --foreground: 210 20% 85%;
-    --card: 220 25% 8%;
-    --card-foreground: 210 20% 85%;
-    --popover: 220 25% 8%;
-    --popover-foreground: 210 20% 85%;
+    /* Premium dark theme — deeper, cooler, more refined than pure black */
+    --background: 220 35% 3%;
+    --foreground: 214 20% 88%;
+    --card: 220 30% 6%;
+    --card-foreground: 214 20% 88%;
+    --popover: 220 28% 8%;
+    --popover-foreground: 214 20% 88%;
     --primary: 39 96% 53%;
-    --primary-foreground: 220 25% 5%;
-    --secondary: 220 20% 14%;
-    --secondary-foreground: 210 20% 85%;
-    --muted: 220 20% 12%;
-    --muted-foreground: 210 15% 50%;
-    --accent: 220 20% 14%;
-    --accent-foreground: 210 20% 85%;
+    --primary-foreground: 220 30% 4%;
+    --secondary: 220 22% 13%;
+    --secondary-foreground: 214 20% 85%;
+    --muted: 220 22% 10%;
+    --muted-foreground: 215 15% 48%;
+    --accent: 220 22% 13%;
+    --accent-foreground: 214 20% 88%;
     --destructive: 0 62% 50%;
     --destructive-foreground: 0 0% 100%;
-    --border: 220 20% 16%;
-    --input: 220 20% 16%;
+    --border: 220 22% 12%;
+    --input: 220 22% 14%;
     --ring: 39 96% 53%;
+
+    /* Surface layers (dark) — creates depth without drop shadows */
+    --surface-0: 220 35% 3%;
+    --surface-1: 220 30% 6%;
+    --surface-2: 220 28% 10%;
+    --surface-3: 218 25% 15%;
   }
 }
 
@@ -61,6 +73,8 @@
     @apply antialiased;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
     text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   body {
@@ -68,17 +82,17 @@
     font-family: var(--font-inter), system-ui, sans-serif;
   }
 
-  /* Monospace numbers in financial data */
+  /* Monospace numbers in financial data — ALWAYS use for numeric values */
   .font-data {
-    font-family: var(--font-mono), "JetBrains Mono", "SF Mono", monospace;
+    font-family: var(--font-mono), "JetBrains Mono", "SF Mono", "Fira Code", monospace;
     font-variant-numeric: tabular-nums;
     font-feature-settings: "tnum";
   }
 
-  /* Scrollbar styling */
+  /* Premium scrollbar */
   ::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+    width: 5px;
+    height: 5px;
   }
 
   ::-webkit-scrollbar-track {
@@ -86,27 +100,71 @@
   }
 
   ::-webkit-scrollbar-thumb {
-    @apply bg-border rounded-full;
+    @apply rounded-full;
+    background-color: hsl(220, 22%, 16%);
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    @apply bg-muted-foreground/30;
+    background-color: hsl(215, 15%, 28%);
+  }
+
+  /* Selection color */
+  ::selection {
+    background-color: rgba(240, 180, 41, 0.2);
+    color: inherit;
   }
 }
 
 @layer components {
-  /* Data table cell */
+  /* ─── Panel System ─────────────────────────────────────────── */
+
+  .panel {
+    @apply rounded-lg border border-border bg-card;
+    box-shadow:
+      0 0 0 1px hsl(var(--border)),
+      0 1px 3px rgba(0, 0, 0, 0.2),
+      0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  .panel-raised {
+    @apply rounded-lg border border-border;
+    background: hsl(var(--surface-2));
+    box-shadow:
+      0 0 0 1px hsl(var(--border)),
+      0 2px 6px rgba(0, 0, 0, 0.25),
+      0 8px 24px rgba(0, 0, 0, 0.2);
+  }
+
+  .panel-hero {
+    @apply rounded-xl border;
+    border-color: rgba(240, 180, 41, 0.15);
+    background: linear-gradient(
+      135deg,
+      hsl(var(--surface-1)) 0%,
+      hsl(var(--surface-2)) 100%
+    );
+    box-shadow:
+      0 0 0 1px rgba(240, 180, 41, 0.08),
+      0 4px 16px rgba(0, 0, 0, 0.2),
+      0 0 32px rgba(240, 180, 41, 0.04);
+  }
+
+  /* ─── Data Display ─────────────────────────────────────────── */
+
   .data-cell {
     @apply font-data text-sm tabular-nums;
   }
 
-  /* Positive/negative price indicators */
   .text-positive {
     color: #16c784;
   }
 
   .text-negative {
     color: #ea3943;
+  }
+
+  .text-warning {
+    color: #f59e0b;
   }
 
   .bg-positive-subtle {
@@ -117,13 +175,175 @@
     background-color: rgba(234, 57, 67, 0.08);
   }
 
-  /* Panel card */
-  .panel {
-    @apply rounded-lg border border-border bg-card shadow-panel;
+  .bg-warning-subtle {
+    background-color: rgba(245, 158, 11, 0.08);
   }
 
-  /* Ticker bar animation pause on hover */
+  /* ─── Label System (always uppercase) ──────────────────────── */
+
+  .label-lg {
+    @apply text-xs font-semibold uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .label-md {
+    @apply font-medium uppercase;
+    font-size: 0.6875rem;
+    letter-spacing: 0.06em;
+  }
+
+  .label-sm {
+    @apply font-medium uppercase;
+    font-size: 0.625rem;
+    letter-spacing: 0.08em;
+  }
+
+  /* ─── Status Indicators ────────────────────────────────────── */
+
+  .status-dot {
+    @apply inline-block h-1.5 w-1.5 rounded-full;
+  }
+
+  .status-live {
+    @apply status-dot;
+    background-color: #16c784;
+    box-shadow: 0 0 6px rgba(22, 199, 132, 0.4);
+    animation: status-pulse 2s ease-in-out infinite;
+  }
+
+  .status-recent {
+    @apply status-dot;
+    background-color: #f59e0b;
+  }
+
+  .status-stale {
+    @apply status-dot;
+    background-color: #ea3943;
+  }
+
+  .status-static {
+    @apply status-dot;
+    background-color: #6b7a99;
+  }
+
+  /* ─── Ticker Strip ─────────────────────────────────────────── */
+
+  .ticker-container {
+    @apply overflow-hidden;
+  }
+
   .ticker-container:hover .ticker-track {
     animation-play-state: paused;
   }
+
+  .ticker-track {
+    animation: ticker-scroll 60s linear infinite;
+  }
+
+  /* ─── Confidence Badge ─────────────────────────────────────── */
+
+  .confidence-badge {
+    @apply inline-flex items-center gap-1 rounded-full px-2 py-0.5;
+    font-size: 0.625rem;
+    letter-spacing: 0.04em;
+  }
+
+  /* ─── Value Change Flash ───────────────────────────────────── */
+
+  .flash-positive {
+    animation: value-flash-green 800ms ease-out;
+  }
+
+  .flash-negative {
+    animation: value-flash-red 800ms ease-out;
+  }
+
+  /* ─── Divider ──────────────────────────────────────────────── */
+
+  .divider-subtle {
+    @apply border-t;
+    border-color: hsl(var(--border));
+  }
+
+  .divider-strong {
+    @apply border-t;
+    border-color: hsl(var(--surface-3));
+  }
+}
+
+@layer utilities {
+  /* Grid background pattern for hero sections */
+  .bg-grid {
+    background-image:
+      linear-gradient(hsl(var(--border)) 1px, transparent 1px),
+      linear-gradient(90deg, hsl(var(--border)) 1px, transparent 1px);
+    background-size: 48px 48px;
+  }
+
+  /* Radial glow for hero emphasis */
+  .glow-gold {
+    background: radial-gradient(
+      ellipse at 50% 0%,
+      rgba(240, 180, 41, 0.08) 0%,
+      transparent 70%
+    );
+  }
+
+  .glow-gold-bottom {
+    background: radial-gradient(
+      ellipse at 50% 100%,
+      rgba(240, 180, 41, 0.06) 0%,
+      transparent 60%
+    );
+  }
+
+  /* Fade edges for ticker overflow */
+  .mask-fade-x {
+    mask-image: linear-gradient(
+      to right,
+      transparent 0%,
+      black 4%,
+      black 96%,
+      transparent 100%
+    );
+    -webkit-mask-image: linear-gradient(
+      to right,
+      transparent 0%,
+      black 4%,
+      black 96%,
+      transparent 100%
+    );
+  }
+}
+
+/* ─── Keyframes ──────────────────────────────────────────────── */
+
+@keyframes ticker-scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+@keyframes status-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+@keyframes value-flash-green {
+  0% { background-color: rgba(22, 199, 132, 0.15); }
+  100% { background-color: transparent; }
+}
+
+@keyframes value-flash-red {
+  0% { background-color: rgba(234, 57, 67, 0.15); }
+  100% { background-color: transparent; }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes skeleton-pulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.7; }
 }

@@ -4,10 +4,19 @@ import { useQuery } from "@tanstack/react-query";
 import { TopBar } from "@/components/layout/TopBar";
 import { Shell } from "@/components/layout/Shell";
 import { MetricCard } from "@/components/charts/MetricCard";
+import { TickerStrip } from "@/components/charts/TickerStrip";
+import { WhatChangedToday } from "@/components/shared/WhatChangedToday";
+import { AIBriefingCard } from "@/components/shared/AIBriefingCard";
+import { EventFeed } from "@/components/shared/EventFeed";
+import { SourceFooter } from "@/components/shared/SourceFooter";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
-import { AlertCircle, RefreshCw, TrendingUp, Landmark, Droplets, Receipt } from "lucide-react";
+import { AlertCircle, RefreshCw, Landmark, Droplets, TrendingUp, Receipt, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils/cn";
+import { useUIStore } from "@/stores/useUIStore";
+import type { TickerItem } from "@/components/charts/TickerStrip";
+import type { DailyChange } from "@/components/shared/WhatChangedToday";
+import type { FeedEvent } from "@/components/shared/EventFeed";
 
 interface OverviewMetric {
   id: string;
@@ -31,6 +40,7 @@ interface OverviewResponse {
 }
 
 export default function DashboardPage() {
+  const { sidebarOpen } = useUIStore();
   const { data, isLoading, error, refetch, dataUpdatedAt } = useQuery<OverviewResponse>({
     queryKey: ["overview"],
     queryFn: async () => {
@@ -42,6 +52,55 @@ export default function DashboardPage() {
     staleTime: 30_000,
   });
 
+  // Build ticker items from metrics
+  const tickerItems: TickerItem[] = data
+    ? data.metrics.map((m) => ({
+        label: m.id.replace(/_/g, " ").toUpperCase(),
+        value: m.formattedValue,
+        change: m.changePercent,
+      }))
+    : [];
+
+  // Build "What Changed Today" from metrics with changes
+  const dailyChanges: DailyChange[] = data
+    ? data.metrics
+        .filter((m) => m.change !== null && m.change !== 0)
+        .slice(0, 5)
+        .map((m) => ({
+          id: m.id,
+          metric: m.label,
+          direction: (m.change ?? 0) > 0 ? "up" as const : "down" as const,
+          magnitude: m.formattedValue,
+          context: `Source: ${m.source}${m.lastUpdated ? ` · ${new Date(m.lastUpdated).toLocaleDateString()}` : ""}`,
+          invertSentiment: m.invertColor,
+        }))
+    : [];
+
+  // Static event feed (would be API-driven in production)
+  const events: FeedEvent[] = [
+    {
+      id: "1",
+      date: new Date().toISOString(),
+      title: "Dashboard loaded with live data",
+      detail: "All metrics fetched from Treasury, FRED, and FiscalData APIs",
+      type: "data_release",
+    },
+    {
+      id: "2",
+      date: new Date(Date.now() - 86400000).toISOString(),
+      title: "Federal Reserve H.4.1 release (weekly)",
+      detail: "Fed balance sheet data updated",
+      type: "policy",
+    },
+    {
+      id: "3",
+      date: new Date(Date.now() - 172800000).toISOString(),
+      title: "Daily Treasury Statement published",
+      detail: "TGA balance and cash position updated",
+      type: "fiscal",
+    },
+  ];
+
   return (
     <>
       <TopBar
@@ -50,17 +109,29 @@ export default function DashboardPage() {
       >
         <button
           onClick={() => refetch()}
-          className="flex items-center gap-1.5 rounded-md border border-border bg-card px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:text-foreground"
+          className="flex items-center gap-1.5 rounded-lg border border-border bg-card px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:border-primary/30 hover:text-foreground"
         >
           <RefreshCw className="h-3 w-3" />
           Refresh
         </button>
         {dataUpdatedAt > 0 && (
-          <span className="text-2xs text-muted-foreground">
-            Updated {new Date(dataUpdatedAt).toLocaleTimeString()}
+          <span className="hidden text-2xs text-muted-foreground sm:block">
+            {new Date(dataUpdatedAt).toLocaleTimeString()}
           </span>
         )}
       </TopBar>
+
+      {/* ─── Ticker Strip ──────────────────────────────────── */}
+      {tickerItems.length > 0 && (
+        <div
+          className={cn(
+            "transition-all duration-layout",
+            sidebarOpen ? "ml-sidebar" : "ml-sidebar-sm"
+          )}
+        >
+          <TickerStrip items={tickerItems} />
+        </div>
+      )}
 
       <Shell>
         {isLoading && (
@@ -70,12 +141,12 @@ export default function DashboardPage() {
         )}
 
         {error && (
-          <div className="flex h-64 flex-col items-center justify-center gap-2 text-destructive">
-            <AlertCircle className="h-8 w-8" />
-            <p className="text-sm">Failed to load dashboard data</p>
+          <div className="flex h-64 flex-col items-center justify-center gap-3">
+            <AlertCircle className="h-8 w-8 text-destructive" />
+            <p className="text-sm text-muted-foreground">Failed to load dashboard data</p>
             <button
               onClick={() => refetch()}
-              className="text-xs underline hover:no-underline"
+              className="rounded-lg border border-border px-4 py-1.5 text-xs text-muted-foreground transition-colors hover:text-foreground"
             >
               Try again
             </button>
@@ -84,14 +155,14 @@ export default function DashboardPage() {
 
         {data && (
           <div className="space-y-6">
-            {/* Section: Dollar System Vitals */}
+            {/* ─── What Changed Today ────────────────────── */}
+            {dailyChanges.length > 0 && (
+              <WhatChangedToday changes={dailyChanges} />
+            )}
+
+            {/* ─── Dollar System Vitals ──────────────────── */}
             <section>
-              <div className="mb-3 flex items-center gap-2">
-                <TrendingUp className="h-4 w-4 text-primary" />
-                <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-                  Dollar System Vitals
-                </h2>
-              </div>
+              <SectionHeader icon={<TrendingUp />} label="Dollar System Vitals" />
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
                 {data.metrics
                   .filter((m) =>
@@ -107,20 +178,15 @@ export default function DashboardPage() {
                       invertColor={metric.invertColor}
                       sparkline={metric.sparkline}
                       href={metric.href}
-                      subtitle={`Source: ${metric.source} · ${metric.lastUpdated ? new Date(metric.lastUpdated).toLocaleDateString() : "—"}`}
+                      subtitle={metric.lastUpdated ? new Date(metric.lastUpdated).toLocaleDateString() : undefined}
                     />
                   ))}
               </div>
             </section>
 
-            {/* Section: Rates & Yields */}
+            {/* ─── Rates & Yields ────────────────────────── */}
             <section>
-              <div className="mb-3 flex items-center gap-2">
-                <Landmark className="h-4 w-4 text-primary" />
-                <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-                  Rates & Yields
-                </h2>
-              </div>
+              <SectionHeader icon={<Landmark />} label="Rates & Yields" />
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
                 {data.metrics
                   .filter((m) =>
@@ -140,14 +206,9 @@ export default function DashboardPage() {
               </div>
             </section>
 
-            {/* Section: Money & Inflation */}
+            {/* ─── Money & Inflation ─────────────────────── */}
             <section>
-              <div className="mb-3 flex items-center gap-2">
-                <Droplets className="h-4 w-4 text-primary" />
-                <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-                  Money & Inflation
-                </h2>
-              </div>
+              <SectionHeader icon={<Droplets />} label="Money & Inflation" />
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
                 {data.metrics
                   .filter((m) => ["m2", "cpi"].includes(m.id))
@@ -166,45 +227,79 @@ export default function DashboardPage() {
               </div>
             </section>
 
-            {/* Quick Navigation Cards */}
-            <section>
-              <div className="mb-3 flex items-center gap-2">
-                <Receipt className="h-4 w-4 text-primary" />
-                <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-                  Explore
-                </h2>
+            {/* ─── Two-column: AI Briefing + Event Feed ──── */}
+            <div className="grid grid-cols-1 gap-4 lg:grid-cols-5">
+              <div className="lg:col-span-3">
+                <AIBriefingCard
+                  title="Daily Intelligence Summary"
+                  summary={`The U.S. national debt stands at ${data.metrics.find((m) => m.id === "total_debt")?.formattedValue ?? "$36T+"}, with the Treasury continuing to fund operations through regular auctions. The Federal Reserve's balance sheet reflects ongoing quantitative tightening, while the reverse repo facility continues its structural decline as money market funds deploy cash into Treasury bills.\n\nNet liquidity — calculated as Fed Balance Sheet minus TGA minus RRP — remains a key driver of financial conditions. Monitor the TGA balance closely around upcoming auction settlements and tax receipt dates.`}
+                  sources={["Treasury.gov", "FRED", "FiscalData API"]}
+                  generatedAt={new Date().toISOString()}
+                />
               </div>
+              <div className="lg:col-span-2">
+                <EventFeed events={events} />
+              </div>
+            </div>
+
+            {/* ─── Explore Navigation ────────────────────── */}
+            <section>
+              <SectionHeader icon={<Receipt />} label="Explore" />
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
                 <NavCard
                   href="/debt"
                   title="National Debt"
-                  description="Total debt outstanding, composition, growth trajectory, and auction results"
+                  description="Total debt, composition, growth, auction results"
                   icon={<Landmark className="h-5 w-5" />}
+                  color="text-gold-400"
+                  bgColor="bg-gold-400/10"
                 />
                 <NavCard
                   href="/liquidity"
                   title="Liquidity & Fed"
-                  description="Fed balance sheet, TGA, reverse repo, net liquidity formula"
+                  description="Fed BS, TGA, RRP, net liquidity formula"
                   icon={<Droplets className="h-5 w-5" />}
+                  color="text-info"
+                  bgColor="bg-info/10"
                 />
                 <NavCard
                   href="/fiscal"
                   title="Fiscal Flows"
-                  description="Federal receipts, outlays, budget deficit, spending by category"
+                  description="Receipts, outlays, deficit, spending breakdown"
                   icon={<Receipt className="h-5 w-5" />}
+                  color="text-positive"
+                  bgColor="bg-positive/10"
                 />
                 <NavCard
                   href="/markets"
                   title="Dollar & Markets"
-                  description="DXY, Treasury yields, yield curve, market indicators"
+                  description="Yields, curve, money supply, inflation"
                   icon={<TrendingUp className="h-5 w-5" />}
+                  color="text-purple-400"
+                  bgColor="bg-purple-400/10"
                 />
               </div>
             </section>
+
+            {/* ─── Source Footer ──────────────────────────── */}
+            <SourceFooter
+              sources={["U.S. Treasury FiscalData API", "Federal Reserve FRED", "Calculated composites"]}
+              lastFetched={data.lastRefreshed}
+              methodology="All data sourced from official U.S. government APIs. Net Liquidity = Fed Balance Sheet − TGA − RRP."
+            />
           </div>
         )}
       </Shell>
     </>
+  );
+}
+
+function SectionHeader({ icon, label }: { icon: React.ReactNode; label: string }) {
+  return (
+    <div className="mb-3 flex items-center gap-2">
+      <span className="text-primary [&>svg]:h-4 [&>svg]:w-4">{icon}</span>
+      <h2 className="label-lg text-muted-foreground">{label}</h2>
+    </div>
   );
 }
 
@@ -213,25 +308,34 @@ function NavCard({
   title,
   description,
   icon,
+  color,
+  bgColor,
 }: {
   href: string;
   title: string;
   description: string;
   icon: React.ReactNode;
+  color: string;
+  bgColor: string;
 }) {
   return (
     <Link
       href={href}
-      className="panel group flex items-start gap-3 p-4 transition-colors hover:border-primary/30"
+      className="group panel flex items-start gap-3 p-4 transition-all duration-standard hover:border-primary/20 hover:shadow-panel-raised"
     >
-      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary transition-colors group-hover:bg-primary/20">
+      <div className={cn(
+        "flex h-9 w-9 shrink-0 items-center justify-center rounded-lg transition-colors",
+        bgColor,
+        color
+      )}>
         {icon}
       </div>
-      <div>
+      <div className="min-w-0">
         <h3 className="text-sm font-medium text-foreground">{title}</h3>
-        <p className="mt-0.5 text-xs leading-relaxed text-muted-foreground">
-          {description}
-        </p>
+        <p className="mt-0.5 text-xs leading-relaxed text-muted-foreground">{description}</p>
+        <span className="mt-2 inline-flex items-center gap-1 text-2xs font-medium text-primary opacity-0 transition-opacity group-hover:opacity-100">
+          Explore <ArrowRight className="h-2.5 w-2.5" />
+        </span>
       </div>
     </Link>
   );

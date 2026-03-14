@@ -5,19 +5,23 @@ import { cn } from "@/lib/utils/cn";
 
 interface ShellProps {
   children: React.ReactNode;
+  className?: string;
 }
 
-export function Shell({ children }: ShellProps) {
+export function Shell({ children, className }: ShellProps) {
   const { sidebarOpen } = useUIStore();
 
   return (
     <main
       className={cn(
-        "min-h-[calc(100vh-3.5rem)] transition-all duration-200 p-6",
-        sidebarOpen ? "ml-56" : "ml-16"
+        "min-h-[calc(100vh-3.5rem)] transition-all duration-layout p-6",
+        sidebarOpen ? "ml-sidebar" : "ml-sidebar-sm",
+        className
       )}
     >
-      {children}
+      <div className="mx-auto max-w-dashboard animate-fade-in">
+        {children}
+      </div>
     </main>
   );
 }

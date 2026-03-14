@@ -37,7 +37,6 @@ export function MetricCard({
         ? "positive"
         : "negative";
 
-  // Invert color logic: for metrics like debt, "up" is bad
   const colorDirection = invertColor
     ? direction === "positive"
       ? "negative"
@@ -49,19 +48,19 @@ export function MetricCard({
   const content = (
     <div
       className={cn(
-        "panel flex flex-col gap-2 p-4 transition-colors",
-        href && "cursor-pointer hover:border-primary/30",
+        "panel flex flex-col gap-2.5 p-4 transition-all duration-standard",
+        href && "cursor-pointer hover:border-primary/20 hover:shadow-panel-raised",
         className
       )}
     >
       <div className="flex items-center justify-between">
-        <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+        <span className="label-md text-muted-foreground">
           {label}
         </span>
         {changePercent !== null && changePercent !== undefined && (
           <div
             className={cn(
-              "flex items-center gap-0.5 rounded-full px-1.5 py-0.5 text-2xs font-medium",
+              "flex items-center gap-0.5 rounded-full px-2 py-0.5 text-2xs font-medium",
               colorDirection === "positive" && "bg-positive-subtle text-positive",
               colorDirection === "negative" && "bg-negative-subtle text-negative",
               colorDirection === "neutral" && "bg-muted text-muted-foreground"
@@ -77,11 +76,11 @@ export function MetricCard({
 
       <div className="flex items-end justify-between gap-4">
         <div className="min-w-0">
-          <p className="font-data text-xl font-semibold leading-none tracking-tight">
+          <p className="font-data text-data-lg font-semibold leading-none tracking-tight text-foreground">
             {value}
           </p>
           {subtitle && (
-            <p className="mt-1 text-2xs text-muted-foreground">{subtitle}</p>
+            <p className="mt-1.5 text-2xs text-muted-foreground">{subtitle}</p>
           )}
         </div>
 
