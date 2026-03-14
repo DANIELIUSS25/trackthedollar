@@ -180,6 +180,35 @@ export const JOB_SCHEDULES: JobSchedule[] = [
     timeoutMs: 120_000,
     maxRetries: 2,
   },
+
+  // ─── Perplexity-Powered AI Content ────────────────────────
+  {
+    name: "daily-narrative",
+    queue: "ai:perplexity",
+    cron: "15 7 * * *",
+    description: "Generate daily narrative summary via Perplexity (after data ingestion)",
+    enabled: true,
+    timeoutMs: 60_000,
+    maxRetries: 2,
+  },
+  {
+    name: "what-changed-why",
+    queue: "ai:perplexity",
+    cron: "35 * * * *",
+    description: "Generate 'what changed and why' explanations after snapshot build",
+    enabled: true,
+    timeoutMs: 45_000,
+    maxRetries: 1,
+  },
+  {
+    name: "weekly-research-notes",
+    queue: "ai:perplexity",
+    cron: "0 9 * * 1",
+    description: "Generate batch research notes on curated topics (weekly Mon)",
+    enabled: true,
+    timeoutMs: 300_000,
+    maxRetries: 1,
+  },
 ];
 
 /**
