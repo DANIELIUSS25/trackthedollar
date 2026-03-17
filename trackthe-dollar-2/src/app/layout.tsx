@@ -4,6 +4,7 @@ import { ThemeProvider } from "next-themes";
 import { Toaster } from "@/components/ui/toast";
 import QueryProvider from "@/components/shared/QueryProvider";
 import { APP_NAME, APP_DESCRIPTION, APP_URL } from "@/lib/utils/constants";
+import Script from "next/script";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -91,6 +92,14 @@ export default function RootLayout({ children }: RootLayoutProps) {
       suppressHydrationWarning
       className="font-sans"
     >
+      <head>
+        <Script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9686970386773995"
+          crossOrigin="anonymous"
+          strategy="afterInteractive"
+        />
+      </head>
       <body className="min-h-screen bg-background font-sans antialiased">
         <ThemeProvider
           attribute="class"
