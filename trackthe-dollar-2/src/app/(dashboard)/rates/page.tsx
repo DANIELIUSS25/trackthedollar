@@ -3,6 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { MetricCard } from "@/components/charts/MetricCard";
 import { TimeSeriesChart } from "@/components/charts/TimeSeriesChart";
+import { ApiWarning, NoDataState } from "@/components/shared/ApiWarning";
 
 export default function InterestRatesPage() {
   const { data, isLoading, error } = useQuery({
@@ -11,6 +12,8 @@ export default function InterestRatesPage() {
   });
 
   const d = data?.data;
+  const warnings = data?.warnings ?? [];
+  const hasData = d && (d.fedFunds?.current != null || d.treasury10Y?.current != null);
 
   return (
     <main className="ml-sidebar space-y-6 p-6">
@@ -23,8 +26,9 @@ export default function InterestRatesPage() {
 
       {isLoading && <LoadingState />}
       {error && <ErrorState />}
+      <ApiWarning warnings={warnings} />
 
-      {d && (
+      {hasData && (
         <>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
             <MetricCard
@@ -55,7 +59,7 @@ export default function InterestRatesPage() {
               label="Federal Funds Effective Rate"
               color="#f0b429"
               height={300}
-              formatValue={(v) => `${v.toFixed(2)}%`}
+              formatValue={(v: number) => `${v.toFixed(2)}%`}
             />
           )}
 
@@ -65,7 +69,7 @@ export default function InterestRatesPage() {
               label="10-Year Treasury Yield"
               color="#3b82f6"
               height={300}
-              formatValue={(v) => `${v.toFixed(2)}%`}
+              formatValue={(v: number) => `${v.toFixed(2)}%`}
             />
           )}
 
@@ -75,21 +79,28 @@ export default function InterestRatesPage() {
               label="2-Year Treasury Yield"
               color="#16c784"
               height={300}
-              formatValue={(v) => `${v.toFixed(2)}%`}
+              formatValue={(v: number) => `${v.toFixed(2)}%`}
             />
           )}
-
-          <div className="panel p-4">
-            <h3 className="mb-2 text-sm font-medium text-foreground">About Interest Rates</h3>
-            <p className="text-sm text-muted-foreground">
-              The Federal Funds Rate is the interest rate at which depository institutions lend reserve
-              balances overnight. Treasury yields represent the return on U.S. government bonds at
-              various maturities. The yield curve spread (10Y minus 2Y) is a widely watched recession
-              indicator — an inverted curve has preceded every U.S. recession since the 1970s.
-            </p>
-          </div>
         </>
       )}
+
+      {!hasData && !isLoading && !error && (
+        <NoDataState
+          message="Interest rate data is not available"
+          requiresFredKey
+        />
+      )}
+
+      <div className="panel p-4">
+        <h3 className="mb-2 text-sm font-medium text-foreground">About Interest Rates</h3>
+        <p className="text-sm text-muted-foreground">
+          The Federal Funds Rate is the interest rate at which depository institutions lend reserve
+          balances overnight. Treasury yields represent the return on U.S. government bonds at
+          various maturities. The yield curve spread (10Y minus 2Y) is a widely watched recession
+          indicator — an inverted curve has preceded every U.S. recession since the 1970s.
+        </p>
+      </div>
     </main>
   );
 }

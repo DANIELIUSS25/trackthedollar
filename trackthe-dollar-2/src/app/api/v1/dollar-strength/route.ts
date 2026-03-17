@@ -6,8 +6,16 @@ export const revalidate = 300;
 export async function GET() {
   try {
     const data = await fetchDollarStrength();
-    return NextResponse.json({ data, metadata: { timestamp: new Date().toISOString() } });
+    return NextResponse.json({
+      data,
+      metadata: { timestamp: new Date().toISOString() },
+      warnings: data.warning ? [data.warning] : [],
+    });
   } catch (e) {
-    return NextResponse.json({ error: String(e) }, { status: 500 });
+    console.error("[api/v1/dollar-strength]", e);
+    return NextResponse.json(
+      { error: String(e), data: null, warnings: ["API error"] },
+      { status: 500 }
+    );
   }
 }

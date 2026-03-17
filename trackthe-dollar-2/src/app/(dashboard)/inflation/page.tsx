@@ -3,6 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { MetricCard } from "@/components/charts/MetricCard";
 import { TimeSeriesChart } from "@/components/charts/TimeSeriesChart";
+import { ApiWarning, NoDataState } from "@/components/shared/ApiWarning";
 
 export default function InflationPage() {
   const { data, isLoading, error } = useQuery({
@@ -11,6 +12,8 @@ export default function InflationPage() {
   });
 
   const d = data?.data;
+  const warnings = data?.warnings ?? [];
+  const hasData = d && (d.latestCpi != null || d.cpiAll?.length > 0);
 
   return (
     <main className="ml-sidebar space-y-6 p-6">
@@ -23,8 +26,13 @@ export default function InflationPage() {
 
       {isLoading && <LoadingState />}
       {error && <ErrorState />}
+      <ApiWarning warnings={warnings} />
 
-      {d && (
+      {!hasData && !isLoading && !error && (
+        <NoDataState message="Inflation data is not available — BLS API may be unreachable" />
+      )}
+
+      {hasData && (
         <>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
             <MetricCard
