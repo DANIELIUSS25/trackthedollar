@@ -23,51 +23,66 @@ import {
   Layers,
   CheckCircle2,
 } from "lucide-react";
+import { fetchNationalDebt, fetchInterestRates, fetchInflation, fetchMoneySupply, fetchDollarStrength } from "@/lib/api/gov-data";
 
-// ─── Static data (replaced by API in production) ─────────────────────────────
+// ─── Helpers ────────────────────────────────────────────────────────────────
 
-const TICKER_ITEMS = [
-  { label: "NAT'L DEBT", value: "$39.0T", change: 7.7 },
-  { label: "ALL-TIME HIGH", value: "$39T", change: 0 },
-  { label: "FED BS", value: "$6.82T", change: -0.26 },
-  { label: "TGA", value: "$782B", change: 3.03 },
-  { label: "NET LIQ", value: "$5.89T", change: -0.49 },
-  { label: "10Y", value: "4.32%", change: -0.69 },
-  { label: "2Y", value: "4.15%", change: -0.24 },
-  { label: "FED FUNDS", value: "4.33%", change: 0 },
-  { label: "CPI", value: "2.8%", change: -3.45 },
-  { label: "M2", value: "$21.67T", change: 0.41 },
-  { label: "DEFICIT", value: "-$1.83T", change: -8.41 },
-  { label: "DOD SPEND", value: "$886B", change: 3.2 },
-  { label: "FOREIGN AID", value: "$55B", change: -12.1 },
-  { label: "INTEREST", value: "$1.12T/yr", change: 4.38 },
-];
+function fmtT(v: number | null): string {
+  if (v == null) return "—";
+  return `$${(v / 1e12).toFixed(2)}T`;
+}
 
-const DAILY_CHANGES = [
-  { metric: "National Debt", direction: "up" as const, amount: "+$4.7B", context: "Treasury issued $12B in 10Y notes; $7.3B matured", sentiment: "negative" },
-  { metric: "TGA Balance", direction: "up" as const, amount: "+$23B", context: "Tax receipts + auction settlements exceeded outflows", sentiment: "neutral" },
-  { metric: "Reverse Repo", direction: "down" as const, amount: "-$12B", context: "MMFs continue deploying into T-bills as facility drains", sentiment: "positive" },
-  { metric: "10Y Yield", direction: "down" as const, amount: "-3 bps", context: "Flight to safety on weaker payrolls data", sentiment: "neutral" },
-  { metric: "Net Liquidity", direction: "down" as const, amount: "-$29B", context: "QT + rising TGA offset by RRP drain", sentiment: "negative" },
-];
+function fmtB(v: number | null): string {
+  if (v == null) return "—";
+  return `$${(v / 1e9).toFixed(0)}B`;
+}
 
-const FEATURED_METRICS = [
-  { label: "National Debt", value: "$39.0T", sub: "ALL-TIME HIGH — just crossed $39T", icon: Landmark, color: "text-negative", bg: "bg-negative/10" },
-  { label: "Interest Per Day", value: "$3.07B", sub: "$1.12T annualized", icon: TrendingUp, color: "text-purple-400", bg: "bg-purple-400/10" },
-  { label: "Debt Per Citizen", value: "$116,766", sub: "334M population", icon: DollarSign, color: "text-gold-400", bg: "bg-gold-400/10" },
-  { label: "Defense Spending", value: "$886B", sub: "DoD FY2026 obligations", icon: Shield, color: "text-info", bg: "bg-info/10" },
-];
+function fmtPerCitizen(debt: number | null): string {
+  if (debt == null) return "—";
+  return `$${Math.round(debt / 334_000_000).toLocaleString()}`;
+}
+
+function fmtDailyInterest(annualDebt: number | null, avgRate: number | null): string {
+  if (annualDebt == null || avgRate == null) return "—";
+  const annualInterest = annualDebt * (avgRate / 100);
+  return `$${(annualInterest / 365 / 1e9).toFixed(2)}B`;
+}
+
+// ─── Server-side data fetching (runs at build + revalidates) ──────────────
+
+export const revalidate = 300; // revalidate every 5 minutes
+
+async function getLiveData() {
+  try {
+    const [debt, rates, inflation, money, dollarStrength] = await Promise.all([
+      fetchNationalDebt(),
+      fetchInterestRates(),
+      fetchInflation(),
+      fetchMoneySupply(),
+      fetchDollarStrength(),
+    ]);
+    return { debt, rates, inflation, money, dollarStrength, live: true };
+  } catch {
+    return { debt: null, rates: null, inflation: null, money: null, dollarStrength: null, live: false };
+  }
+}
+
+// ─── Static fallback data (used only if all APIs fail) ──────────────────────
+
+type TickerItemData = { label: string; value: string; change: number };
+type FeaturedMetricData = { label: string; value: string; sub: string; icon: typeof Landmark; color: string; bg: string };
+type DailyChangeData = { metric: string; direction: "up" | "down"; amount: string; context: string; sentiment: string };
 
 const FLOW_SUMMARY = {
   inflows: [
-    { label: "Individual Income Tax", value: "$2.43T", pct: 49.6, color: "#f0b429" },
+    { label: "Individual Income Tax", value: "$2.43T", pct: 49.6, color: "#10b981" },
     { label: "Payroll Taxes", value: "$1.68T", pct: 34.3, color: "#3b82f6" },
     { label: "Corporate Tax", value: "$420B", pct: 8.6, color: "#16c784" },
     { label: "Other Revenue", value: "$370B", pct: 7.5, color: "#6b7a99" },
   ],
   outflows: [
     { label: "Health (Medicare/Medicaid)", value: "$1.68T", pct: 26.9, color: "#ea3943" },
-    { label: "Social Security", value: "$1.46T", pct: 23.4, color: "#f0b429" },
+    { label: "Social Security", value: "$1.46T", pct: 23.4, color: "#10b981" },
     { label: "Interest on Debt", value: "$1.12T", pct: 17.9, color: "#8b5cf6" },
     { label: "National Defense", value: "$886B", pct: 14.2, color: "#3b82f6" },
     { label: "Other", value: "$1.10T", pct: 17.6, color: "#6b7a99" },
@@ -104,22 +119,68 @@ const RESEARCH = [
   },
 ];
 
-const FORECASTS = [
-  { metric: "National Debt", now: "$39.0T", projected: "$42T+", horizon: "End FY2027", source: "CBO", trend: "up" as const },
-  { metric: "Interest/Year", now: "$1.12T", projected: "$1.38T", horizon: "FY2027", source: "CBO", trend: "up" as const },
-  { metric: "Fed Balance Sheet", now: "$6.82T", projected: "$6.2T", horizon: "End of QT", source: "FOMC", trend: "down" as const },
-  { metric: "Fed Funds Rate", now: "4.33%", projected: "3.58%", horizon: "End 2026", source: "Dot Plot", trend: "down" as const },
-];
+export default async function LandingPage() {
+  const live = await getLiveData();
+  const d = live.debt;
+  const r = live.rates;
+  const inf = live.inflation;
+  const m = live.money;
+  const dxy = live.dollarStrength;
 
-export default function LandingPage() {
+  // Build ticker from live data
+  const TICKER_ITEMS: TickerItemData[] = [
+    { label: "NAT'L DEBT", value: d?.totalDebt ? fmtT(d.totalDebt) : "—", change: d?.changePercent ?? 0 },
+    { label: "10Y", value: r?.treasury10Y?.current != null ? `${r.treasury10Y.current.toFixed(2)}%` : "—", change: 0 },
+    { label: "2Y", value: r?.treasury2Y?.current != null ? `${r.treasury2Y.current.toFixed(2)}%` : "—", change: 0 },
+    { label: "FED FUNDS", value: r?.fedFunds?.current != null ? `${r.fedFunds.current.toFixed(2)}%` : "—", change: 0 },
+    { label: "CPI YoY", value: inf?.yoyChange ? `${inf.yoyChange.toFixed(1)}%` : "—", change: 0 },
+    { label: "M2", value: m?.m2?.latest ? `$${(m.m2.latest / 1000).toFixed(2)}T` : "—", change: 0 },
+    { label: "FED BS", value: m?.fedTotalAssets?.latest ? `$${(m.fedTotalAssets.latest / 1e6).toFixed(2)}T` : "—", change: 0 },
+    { label: "DXY", value: dxy?.current?.toFixed(1) ?? "—", change: dxy?.changePercent ?? 0 },
+    { label: "SPREAD", value: r?.yieldCurveSpread != null ? `${(r.yieldCurveSpread * 100).toFixed(0)} bps` : "—", change: 0 },
+  ];
+
+  // Build hero stats from live data
+  const totalDebt = d?.totalDebt ?? null;
+  const avgRate = r?.treasury10Y?.current ?? null;
+  const annualInterestEst = totalDebt && avgRate ? totalDebt * (avgRate / 100) : null;
+
+  const FEATURED_METRICS: FeaturedMetricData[] = [
+    { label: "National Debt", value: totalDebt ? fmtT(totalDebt) : "—", sub: d?.lastDate ? `As of ${d.lastDate}` : "Live from Treasury", icon: Landmark, color: "text-negative", bg: "bg-negative/10" },
+    { label: "Interest Per Day", value: fmtDailyInterest(totalDebt, avgRate), sub: annualInterestEst ? `${fmtT(annualInterestEst)} annualized (est.)` : "Estimated from 10Y rate", icon: TrendingUp, color: "text-purple-400", bg: "bg-purple-400/10" },
+    { label: "Debt Per Citizen", value: fmtPerCitizen(totalDebt), sub: "334M population", icon: DollarSign, color: "text-gold-400", bg: "bg-gold-400/10" },
+    { label: "Dollar Index", value: dxy?.current?.toFixed(1) ?? "—", sub: "Trade-Weighted Broad (FRED)", icon: Shield, color: "text-info", bg: "bg-info/10" },
+  ];
+
+  // Build daily changes from live debt data
+  const DAILY_CHANGES: DailyChangeData[] = d?.dailyChange
+    ? [
+        {
+          metric: "National Debt",
+          direction: d.dailyChange > 0 ? "up" as const : "down" as const,
+          amount: d.dailyChange > 0 ? `+${fmtB(d.dailyChange)}` : fmtB(d.dailyChange),
+          context: `Daily change from ${d.lastDate ?? "latest data"}`,
+          sentiment: d.dailyChange > 0 ? "negative" : "positive",
+        },
+      ]
+    : [];
+
+  // Build forecasts from live data (with static fallbacks)
+  const FORECASTS = [
+    { metric: "National Debt", now: totalDebt ? fmtT(totalDebt) : "$39.0T", projected: "$42T+", horizon: "End FY2027", source: "CBO", trend: "up" as const },
+    { metric: "Interest/Year", now: annualInterestEst ? fmtT(annualInterestEst) : "$1.12T", projected: "$1.38T", horizon: "FY2027", source: "CBO", trend: "up" as const },
+    { metric: "Fed Balance Sheet", now: m?.fedTotalAssets?.latest ? `$${(m.fedTotalAssets.latest / 1e6).toFixed(2)}T` : "$6.82T", projected: "$6.2T", horizon: "End of QT", source: "FOMC", trend: "down" as const },
+    { metric: "Fed Funds Rate", now: r?.fedFunds?.current != null ? `${r.fedFunds.current.toFixed(2)}%` : "4.33%", projected: "3.58%", horizon: "End 2026", source: "Dot Plot", trend: "down" as const },
+  ];
+
   return (
     <div className="min-h-screen bg-background">
       {/* ─── Sticky Nav ────────────────────────────────────────── */}
       <header className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-md">
         <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:px-6">
           <Link href="/" className="flex items-center gap-2.5">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary shadow-glow">
-              <DollarSign className="h-4 w-4 text-primary-foreground" />
+            <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary/15 ring-1 ring-primary/30">
+              <DollarSign className="h-4 w-4 text-primary" />
             </div>
             <span className="text-sm font-semibold tracking-tight">
               TrackThe<span className="text-primary">Dollar</span>
@@ -179,7 +240,7 @@ export default function LandingPage() {
           <div className="mb-4 flex justify-center animate-reveal">
             <div className="inline-flex items-center gap-2 rounded-full border border-negative/40 bg-negative/10 px-4 py-1.5 animate-pulse">
               <span className="h-2 w-2 rounded-full bg-negative" />
-              <span className="label-md font-semibold text-negative">U.S. NATIONAL DEBT HITS ALL-TIME HIGH: $39 TRILLION</span>
+              <span className="label-md font-semibold text-negative">U.S. NATIONAL DEBT: {totalDebt ? fmtT(totalDebt).toUpperCase() : "$39+ TRILLION"} — LIVE DATA</span>
             </div>
           </div>
 
@@ -192,7 +253,7 @@ export default function LandingPage() {
 
           {/* Headline */}
           <h1 className="animate-reveal stagger-1 mx-auto max-w-4xl text-center text-display-xl font-bold tracking-tight md:text-[3.5rem] lg:text-[4rem]">
-            <span className="text-negative">$39 Trillion</span> and Counting.{" "}
+            <span className="text-negative">{totalDebt ? fmtT(totalDebt) : "$39+ Trillion"}</span> and Counting.{" "}
             <span className="text-gradient-gold">Track Every Dollar.</span>
           </h1>
 
@@ -224,29 +285,29 @@ export default function LandingPage() {
               <div className="grid grid-cols-2 gap-4 sm:gap-8 md:grid-cols-4">
                 <HeroStatBlock
                   label="National Debt"
-                  value="$39.0T"
-                  subValue="ALL-TIME HIGH"
+                  value={totalDebt ? fmtT(totalDebt) : "—"}
+                  subValue={d?.lastDate ? `As of ${d.lastDate}` : "Live from Treasury"}
                   status="live"
                   statusLabel="Treasury"
                 />
                 <HeroStatBlock
-                  label="Interest/Year"
-                  value="$1.12T"
-                  subValue="Now exceeds defense budget"
+                  label="Est. Interest/Year"
+                  value={annualInterestEst ? fmtT(annualInterestEst) : "—"}
+                  subValue="Based on avg. 10Y rate"
                   status="recent"
-                  statusLabel="Treasury"
+                  statusLabel="Calculated"
                 />
                 <HeroStatBlock
-                  label="Defense Spending"
-                  value="$886B"
-                  subValue="DoD obligations FY2026"
-                  status="recent"
-                  statusLabel="USAspending"
+                  label="Fed Funds Rate"
+                  value={r?.fedFunds?.current != null ? `${r.fedFunds.current.toFixed(2)}%` : "—"}
+                  subValue="Federal Reserve"
+                  status={r?.fedFunds?.current != null ? "live" : "recent"}
+                  statusLabel="FRED"
                 />
                 <HeroStatBlock
                   label="Debt Per Citizen"
-                  value="$116,766"
-                  subValue="Every man, woman, child"
+                  value={fmtPerCitizen(totalDebt)}
+                  subValue="334M population"
                   status="live"
                   statusLabel="Calculated"
                 />
@@ -282,6 +343,7 @@ export default function LandingPage() {
       </section>
 
       {/* ─── What Changed Today ──────────────────────────────── */}
+      {DAILY_CHANGES.length > 0 && (
       <section className="border-b border-border py-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
           <div className="mb-8 flex items-center gap-3">
@@ -291,7 +353,7 @@ export default function LandingPage() {
             <div>
               <h2 className="text-display-md font-bold tracking-tight">What Changed Today</h2>
               <p className="mt-1 text-sm text-muted-foreground">
-                Key movements across the dollar system in the last 24 hours.
+                Key movements across the dollar system — live from government APIs.
               </p>
             </div>
           </div>
@@ -337,6 +399,7 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
+      )}
 
       {/* ─── Four Pillars ──────────────────────────────────────── */}
       <section id="features" className="border-b border-border py-20">
@@ -711,8 +774,8 @@ export default function LandingPage() {
             {/* Brand */}
             <div className="md:col-span-2">
               <div className="flex items-center gap-2.5">
-                <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary">
-                  <DollarSign className="h-3.5 w-3.5 text-primary-foreground" />
+                <div className="flex h-7 w-7 items-center justify-center rounded-md bg-primary/15 ring-1 ring-primary/30">
+                  <DollarSign className="h-3.5 w-3.5 text-primary" />
                 </div>
                 <span className="text-sm font-semibold">
                   TrackThe<span className="text-primary">Dollar</span>.com

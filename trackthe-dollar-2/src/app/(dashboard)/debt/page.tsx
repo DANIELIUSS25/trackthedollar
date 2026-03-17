@@ -108,7 +108,7 @@ export default function DebtPage() {
                     label="Debt Held by Public"
                     value={data.debtHeldByPublic}
                     total={data.totalDebt}
-                    color="#f0b429"
+                    color="#10b981"
                   />
                   <CompositionBar
                     label="Intragovernmental Holdings"

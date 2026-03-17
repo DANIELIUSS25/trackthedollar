@@ -76,8 +76,8 @@ export function MobileNav() {
             className="flex items-center gap-2"
             onClick={() => setOpen(false)}
           >
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary shadow-glow">
-              <DollarSign className="h-4 w-4 text-primary-foreground" />
+            <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary/15 ring-1 ring-primary/30">
+              <DollarSign className="h-4 w-4 text-primary" />
             </div>
             <span className="text-sm font-semibold">
               TrackThe<span className="text-primary">Dollar</span>

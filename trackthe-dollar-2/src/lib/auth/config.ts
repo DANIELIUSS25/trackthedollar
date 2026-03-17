@@ -83,8 +83,8 @@ export const authConfig: NextAuthConfig = {
   },
 
   pages: {
-    signIn: "/login",
-    error: "/login",
+    signIn: "/dashboard",
+    error: "/dashboard",
   },
 
   events: {

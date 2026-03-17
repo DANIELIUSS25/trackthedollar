@@ -57,7 +57,7 @@ export default function InterestRatesPage() {
             <TimeSeriesChart
               data={d.fedFunds.series}
               label="Federal Funds Effective Rate"
-              color="#f0b429"
+              color="#10b981"
               height={300}
               formatValue={(v: number) => `${v.toFixed(2)}%`}
             />

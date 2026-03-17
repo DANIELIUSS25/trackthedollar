@@ -53,7 +53,7 @@ export default function MoneySupplyPage() {
             <TimeSeriesChart
               data={d.m2.series}
               label="M2 Money Stock (Billions)"
-              color="#f0b429"
+              color="#10b981"
               height={350}
               formatValue={(v: number) => formatCompact(v * 1e9)}
             />

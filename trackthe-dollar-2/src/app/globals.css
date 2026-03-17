@@ -12,8 +12,8 @@
     --card-foreground: 220 25% 10%;
     --popover: 0 0% 100%;
     --popover-foreground: 220 25% 10%;
-    --primary: 39 96% 53%;
-    --primary-foreground: 220 25% 10%;
+    --primary: 160 84% 39%;
+    --primary-foreground: 0 0% 100%;
     --secondary: 220 15% 90%;
     --secondary-foreground: 220 25% 10%;
     --muted: 220 15% 92%;
@@ -24,7 +24,7 @@
     --destructive-foreground: 0 0% 100%;
     --border: 220 15% 85%;
     --input: 220 15% 85%;
-    --ring: 39 96% 53%;
+    --ring: 160 84% 39%;
     --radius: 0.5rem;
 
     /* Surface layers (light) */
@@ -42,8 +42,8 @@
     --card-foreground: 214 20% 88%;
     --popover: 220 28% 8%;
     --popover-foreground: 214 20% 88%;
-    --primary: 39 96% 53%;
-    --primary-foreground: 220 30% 4%;
+    --primary: 160 84% 39%;
+    --primary-foreground: 0 0% 100%;
     --secondary: 220 22% 13%;
     --secondary-foreground: 214 20% 85%;
     --muted: 220 22% 10%;
@@ -54,7 +54,7 @@
     --destructive-foreground: 0 0% 100%;
     --border: 220 22% 12%;
     --input: 220 22% 14%;
-    --ring: 39 96% 53%;
+    --ring: 160 84% 39%;
 
     /* Surface layers (dark) — creates depth without drop shadows */
     --surface-0: 220 35% 3%;
@@ -110,7 +110,7 @@
 
   /* Selection color */
   ::selection {
-    background-color: rgba(240, 180, 41, 0.2);
+    background-color: rgba(16, 185, 129, 0.2);
     color: inherit;
   }
 }
@@ -137,16 +137,16 @@
 
   .panel-hero {
     @apply rounded-xl border;
-    border-color: rgba(240, 180, 41, 0.15);
+    border-color: rgba(16, 185, 129, 0.15);
     background: linear-gradient(
       135deg,
       hsl(var(--surface-1)) 0%,
       hsl(var(--surface-2)) 100%
     );
     box-shadow:
-      0 0 0 1px rgba(240, 180, 41, 0.08),
+      0 0 0 1px rgba(16, 185, 129, 0.08),
       0 4px 16px rgba(0, 0, 0, 0.2),
-      0 0 32px rgba(240, 180, 41, 0.04);
+      0 0 32px rgba(16, 185, 129, 0.04);
   }
 
   /* ─── Data Display ─────────────────────────────────────────── */
@@ -290,7 +290,7 @@
   .glow-gold {
     background: radial-gradient(
       ellipse at 50% 0%,
-      rgba(240, 180, 41, 0.08) 0%,
+      rgba(16, 185, 129, 0.08) 0%,
       transparent 70%
     );
   }
@@ -298,7 +298,7 @@
   .glow-gold-bottom {
     background: radial-gradient(
       ellipse at 50% 100%,
-      rgba(240, 180, 41, 0.06) 0%,
+      rgba(16, 185, 129, 0.06) 0%,
       transparent 60%
     );
   }
@@ -306,7 +306,7 @@
   .glow-gold-center {
     background: radial-gradient(
       circle at 50% 50%,
-      rgba(240, 180, 41, 0.05) 0%,
+      rgba(16, 185, 129, 0.05) 0%,
       transparent 60%
     );
   }
@@ -364,7 +364,7 @@
 
   /* Gradient text utility */
   .text-gradient-gold {
-    background: linear-gradient(135deg, #f0b429 0%, #e89e0d 50%, #d4830a 100%);
+    background: linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -430,8 +430,8 @@
 }
 
 @keyframes glow-pulse {
-  0%, 100% { box-shadow: 0 0 12px rgba(240, 180, 41, 0.1); }
-  50% { box-shadow: 0 0 24px rgba(240, 180, 41, 0.2); }
+  0%, 100% { box-shadow: 0 0 12px rgba(16, 185, 129, 0.1); }
+  50% { box-shadow: 0 0 24px rgba(16, 185, 129, 0.2); }
 }
 
 @keyframes counter-scroll {

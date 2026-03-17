@@ -204,7 +204,7 @@ export default function DashboardPage() {
                   <TimeSeriesChart
                     data={d.inflation.cpiAll}
                     label="CPI — All Items (Seasonally Adjusted)"
-                    color="#f0b429"
+                    color="#10b981"
                     height={300}
                     formatValue={(v) => v.toFixed(1)}
                   />

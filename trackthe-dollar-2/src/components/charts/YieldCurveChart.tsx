@@ -48,8 +48,8 @@ export function YieldCurveChart({ data, height = 240, title }: YieldCurveChartPr
         <AreaChart data={data} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
           <defs>
             <linearGradient id="yieldCurveGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#f0b429" stopOpacity={0.2} />
-              <stop offset="100%" stopColor="#f0b429" stopOpacity={0} />
+              <stop offset="0%" stopColor="#10b981" stopOpacity={0.2} />
+              <stop offset="100%" stopColor="#10b981" stopOpacity={0} />
             </linearGradient>
           </defs>
           <CartesianGrid
@@ -90,11 +90,11 @@ export function YieldCurveChart({ data, height = 240, title }: YieldCurveChartPr
           <Area
             type="monotone"
             dataKey="value"
-            stroke="#f0b429"
+            stroke="#10b981"
             strokeWidth={2}
             fill="url(#yieldCurveGrad)"
-            dot={{ fill: "#f0b429", stroke: "#0a0e14", strokeWidth: 2, r: 3 }}
-            activeDot={{ fill: "#f0b429", stroke: "#f0b429", strokeWidth: 1, r: 5 }}
+            dot={{ fill: "#10b981", stroke: "#0a0e14", strokeWidth: 2, r: 3 }}
+            activeDot={{ fill: "#10b981", stroke: "#10b981", strokeWidth: 1, r: 5 }}
           />
         </AreaChart>
       </ResponsiveContainer>

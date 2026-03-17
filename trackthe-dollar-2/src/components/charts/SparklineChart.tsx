@@ -10,7 +10,7 @@ interface SparklineChartProps {
 
 export function SparklineChart({
   data,
-  color = "#f0b429",
+  color = "#10b981",
 }: SparklineChartProps) {
   return (
     <ResponsiveContainer width="100%" height="100%">

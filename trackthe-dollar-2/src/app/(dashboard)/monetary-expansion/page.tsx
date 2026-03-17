@@ -73,7 +73,7 @@ export default function MonetaryExpansionPage() {
             <TimeSeriesChart
               data={d.fedTotalAssets.series}
               label="Fed Total Assets (Primary Proxy Component — 35% Weight)"
-              color="#f0b429"
+              color="#10b981"
               height={350}
               formatValue={(v) => formatCompact(v * 1e6)}
             />

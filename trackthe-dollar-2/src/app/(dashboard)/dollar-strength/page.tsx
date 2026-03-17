@@ -54,7 +54,7 @@ export default function DollarStrengthPage() {
             <TimeSeriesChart
               data={d.series}
               label="Trade-Weighted Dollar Index — Historical"
-              color="#f0b429"
+              color="#10b981"
               height={400}
               formatValue={(v: number) => v.toFixed(1)}
             />

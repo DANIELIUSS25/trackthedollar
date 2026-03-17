@@ -363,7 +363,7 @@ export const MOCK_YIELD_CURVE_CURRENT = [
 export const MOCK_DOLLAR_FLOWS = {
   sources: [
     { id: "tax_receipts", label: "Tax Receipts", value: 4_900_000_000_000, color: "#16c784" },
-    { id: "treasury_issuance", label: "Treasury Issuance", value: 8_400_000_000_000, color: "#f0b429" },
+    { id: "treasury_issuance", label: "Treasury Issuance", value: 8_400_000_000_000, color: "#10b981" },
     { id: "fed_operations", label: "Fed Operations", value: 960_000_000_000, color: "#3b82f6" },
   ],
   destinations: [
@@ -378,7 +378,7 @@ export const MOCK_DOLLAR_FLOWS = {
 // ─── Spending Breakdown ──────────────────────────────────────────────────────
 
 export const MOCK_SPENDING_CATEGORIES = [
-  { label: "Social Security", value: 1_460_000_000_000, color: "#f0b429", pctOfTotal: 23.4 },
+  { label: "Social Security", value: 1_460_000_000_000, color: "#10b981", pctOfTotal: 23.4 },
   { label: "Health (Medicare/Medicaid)", value: 1_680_000_000_000, color: "#ea3943", pctOfTotal: 26.9 },
   { label: "Interest on Debt", value: 1_120_000_000_000, color: "#8b5cf6", pctOfTotal: 17.9 },
   { label: "National Defense", value: 886_000_000_000, color: "#3b82f6", pctOfTotal: 14.2 },
@@ -391,7 +391,7 @@ export const MOCK_SPENDING_CATEGORIES = [
 // ─── Revenue Breakdown ───────────────────────────────────────────────────────
 
 export const MOCK_REVENUE_SOURCES = [
-  { label: "Individual Income Tax", value: 2_430_000_000_000, color: "#f0b429", pctOfTotal: 49.6 },
+  { label: "Individual Income Tax", value: 2_430_000_000_000, color: "#10b981", pctOfTotal: 49.6 },
   { label: "Payroll Tax (FICA)", value: 1_680_000_000_000, color: "#3b82f6", pctOfTotal: 34.3 },
   { label: "Corporate Income Tax", value: 420_000_000_000, color: "#16c784", pctOfTotal: 8.6 },
   { label: "Excise & Customs", value: 195_000_000_000, color: "#8b5cf6", pctOfTotal: 4.0 },
@@ -549,7 +549,7 @@ export const TIMEFRAME_OPTIONS = [
 // ─── Main Chart Series Options ───────────────────────────────────────────────
 
 export const CHART_SERIES_OPTIONS = [
-  { id: "net_liquidity", label: "Net Liquidity", color: "#f0b429" },
+  { id: "net_liquidity", label: "Net Liquidity", color: "#10b981" },
   { id: "total_debt", label: "National Debt", color: "#ea3943" },
   { id: "fed_bs", label: "Fed Balance Sheet", color: "#3b82f6" },
   { id: "tga", label: "TGA Balance", color: "#16c784" },

@@ -33,13 +33,13 @@ function formatBillions(v: number): string {
 }
 
 const SPENDING_COLORS = [
-  "#ea3943", "#f0b429", "#3b82f6", "#16c784", "#8b5cf6",
+  "#ea3943", "#10b981", "#3b82f6", "#16c784", "#8b5cf6",
   "#ec4899", "#f97316", "#06b6d4", "#84cc16", "#6366f1",
   "#a855f7", "#14b8a6",
 ];
 
 const REVENUE_COLORS = [
-  "#16c784", "#f0b429", "#3b82f6", "#8b5cf6",
+  "#16c784", "#10b981", "#3b82f6", "#8b5cf6",
   "#ec4899", "#f97316", "#06b6d4", "#84cc16",
 ];
 

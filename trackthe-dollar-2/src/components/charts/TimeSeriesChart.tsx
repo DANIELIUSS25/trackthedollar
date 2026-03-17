@@ -23,7 +23,7 @@ interface TimeSeriesChartProps {
 
 export function TimeSeriesChart({
   data,
-  color = "#f0b429",
+  color = "#10b981",
   label,
   height = 300,
   formatValue = formatCompact,

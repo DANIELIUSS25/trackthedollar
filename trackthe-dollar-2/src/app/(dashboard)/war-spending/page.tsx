@@ -104,7 +104,7 @@ export default function WarSpendingPage() {
             <TimeSeriesChart
               data={fa.totalObligations}
               label="Foreign Assistance — Total Obligations"
-              color="#f0b429"
+              color="#10b981"
               height={300}
               formatValue={formatCompact}
             />

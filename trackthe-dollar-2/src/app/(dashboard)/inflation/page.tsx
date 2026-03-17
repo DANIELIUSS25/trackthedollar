@@ -56,7 +56,7 @@ export default function InflationPage() {
             <TimeSeriesChart
               data={d.cpiAll}
               label="CPI — All Items (Seasonally Adjusted)"
-              color="#f0b429"
+              color="#10b981"
               height={350}
               formatValue={(v) => v.toFixed(1)}
             />

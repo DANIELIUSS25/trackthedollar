@@ -82,18 +82,18 @@ const config: Config = {
           subtle: "rgba(59,130,246,0.08)",
         },
 
-        // Dollar Gold scale
+        // Dollar Green scale
         gold: {
-          50: "#FEF9E7",
-          100: "#FDF0C4",
-          200: "#FBE38A",
-          300: "#F8D14E",
-          400: "#F0B429",
-          500: "#D99B1E",
-          600: "#B87D15",
-          700: "#8C5E10",
-          800: "#614008",
-          900: "#3A2605",
+          50: "#ecfdf5",
+          100: "#d1fae5",
+          200: "#a7f3d0",
+          300: "#6ee7b7",
+          400: "#34d399",
+          500: "#10b981",
+          600: "#059669",
+          700: "#047857",
+          800: "#065f46",
+          900: "#064e3b",
         },
 
         // Terminal palette
@@ -105,7 +105,7 @@ const config: Config = {
           border: "#1E2738",
           text: "#E2E8F0",
           dim: "#6b7a99",
-          highlight: "#f0b429",
+          highlight: "#10b981",
         },
       },
       fontFamily: {
@@ -164,9 +164,9 @@ const config: Config = {
         "panel-raised":
           "0 0 0 1px hsl(var(--border)), 0 2px 6px rgba(0,0,0,0.25), 0 8px 24px rgba(0,0,0,0.2)",
         "glow":
-          "0 0 24px rgba(240,180,41,0.12)",
+          "0 0 24px rgba(16,185,129,0.12)",
         "glow-strong":
-          "0 0 40px rgba(240,180,41,0.2)",
+          "0 0 40px rgba(16,185,129,0.2)",
       },
       transitionDuration: {
         "micro": "100ms",

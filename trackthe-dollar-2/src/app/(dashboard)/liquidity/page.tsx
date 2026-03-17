@@ -160,7 +160,7 @@ export default function LiquidityPage() {
               <TimeSeriesChart
                 data={data.netLiquidity.series}
                 label="Net Liquidity (Fed BS − TGA − RRP)"
-                color="#f0b429"
+                color="#10b981"
                 height={350}
                 formatValue={(v) => formatBillions(v)}
               />

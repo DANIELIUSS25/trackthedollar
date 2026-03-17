@@ -24,7 +24,7 @@ interface BarBreakdownChartProps {
 }
 
 const DEFAULT_COLORS = [
-  "#f0b429",
+  "#10b981",
   "#16c784",
   "#3b82f6",
   "#8b5cf6",

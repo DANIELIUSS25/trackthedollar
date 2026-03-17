@@ -52,7 +52,7 @@ export default function ForeignAssistancePage() {
             <TimeSeriesChart
               data={d.totalObligations}
               label="Foreign Assistance — Total Obligations by Fiscal Year"
-              color="#f0b429"
+              color="#10b981"
               height={350}
               formatValue={formatCompact}
             />

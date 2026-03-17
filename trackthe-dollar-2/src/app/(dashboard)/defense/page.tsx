@@ -61,7 +61,7 @@ export default function DefenseSpendingPage() {
             <TimeSeriesChart
               data={d.budgetaryResources}
               label="DoD Budgetary Resources by Fiscal Year"
-              color="#f0b429"
+              color="#10b981"
               height={350}
               formatValue={formatCompact}
             />

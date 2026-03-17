@@ -73,8 +73,8 @@ export function Sidebar() {
       {/* ─── Logo ──────────────────────────────────────────── */}
       <div className="flex h-14 items-center border-b border-border px-4">
         <Link href="/dashboard" className="flex items-center gap-2.5 overflow-hidden">
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary shadow-glow">
-            <DollarSign className="h-4 w-4 text-primary-foreground" />
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-primary/15 ring-1 ring-primary/30">
+            <DollarSign className="h-4 w-4 text-primary" />
           </div>
           {sidebarOpen && (
             <div className="flex flex-col">

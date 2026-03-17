@@ -42,7 +42,7 @@ export function InteractiveChart({
   const [activeTimeframe, setActiveTimeframe] = useState("1Y");
 
   const activeOption = seriesOptions.find((s) => s.id === activeSeries) ?? seriesOptions[0];
-  const color = activeOption?.color ?? "#f0b429";
+  const color = activeOption?.color ?? "#10b981";
 
   const rawData = useMemo(() => getSeriesData(activeSeries), [activeSeries, getSeriesData]);
 
