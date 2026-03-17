@@ -1,4 +1,4 @@
-import type { NextConfig } from "next";
+// @ts-check
 
 const cspHeader = `
   default-src 'self';
@@ -17,10 +17,10 @@ const cspHeader = `
   .replace(/\s{2,}/g, " ")
   .trim();
 
-const nextConfig: NextConfig = {
+/** @type {import('next').NextConfig} */
+const nextConfig = {
   reactStrictMode: true,
 
-  // Prevent exposing server internals in error messages
   experimental: {
     serverComponentsExternalPackages: ["@prisma/client", "prisma"],
     optimizePackageImports: [
@@ -68,7 +68,6 @@ const nextConfig: NextConfig = {
           },
         ],
       },
-      // Stripe webhook route must receive raw body — skip body parsing
       {
         source: "/api/stripe/webhook",
         headers: [{ key: "x-raw-body", value: "1" }],
@@ -76,10 +75,8 @@ const nextConfig: NextConfig = {
     ];
   },
 
-  // Intentionally disable powered-by header
   poweredByHeader: false,
 
-  // Redirect www → non-www in production (adjust to your domain)
   async redirects() {
     return process.env.NODE_ENV === "production"
       ? [
@@ -94,11 +91,8 @@ const nextConfig: NextConfig = {
   },
 
   webpack(config) {
-    // Suppress Prisma binary warnings in webpack output
     config.resolve.alias = {
-      ...(config.resolve.alias as Record<string, unknown>),
-      // force single instance of react
-      react: require.resolve("react"),
+      ...config.resolve.alias,
     };
     return config;
   },

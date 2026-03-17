@@ -62,8 +62,8 @@ export async function POST(req: NextRequest) {
       stripeCustomerId = sub.stripeCustomerId;
     } else {
       const customer = await stripe.customers.create({
-        email: session.user.email ?? undefined,
-        name: session.user.name ?? undefined,
+        ...(session.user.email ? { email: session.user.email } : {}),
+        ...(session.user.name ? { name: session.user.name } : {}),
         metadata: { userId: session.user.id },
       });
       stripeCustomerId = customer.id;

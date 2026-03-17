@@ -25,7 +25,7 @@ export function apiSuccess<T>(
   status = 200,
   headers?: HeadersInit
 ): NextResponse<ApiSuccess<T>> {
-  return NextResponse.json({ data, ...(meta ? { meta } : {}) }, { status, headers });
+  return NextResponse.json({ data, ...(meta ? { meta } : {}) }, { status, ...(headers ? { headers } : {}) });
 }
 
 /**
@@ -40,7 +40,7 @@ export function apiError(
 ): NextResponse<ApiError> {
   return NextResponse.json(
     { error: { code, message, ...(details !== undefined ? { details } : {}) } },
-    { status, headers }
+    { status, ...(headers ? { headers } : {}) }
   );
 }
 

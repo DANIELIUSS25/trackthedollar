@@ -19,7 +19,7 @@ export async function GET() {
       tga,
       fedFunds,
       dgs10,
-      dgs2,
+      _dgs2,
       yieldCurve,
       m2,
       cpi,

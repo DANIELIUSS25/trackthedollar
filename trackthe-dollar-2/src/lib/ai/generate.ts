@@ -104,7 +104,7 @@ export async function generateDailyBriefing(): Promise<string> {
       scope: "dashboard",
       title: `Daily Intelligence Summary — ${context.date}`,
       content,
-      dataSources: context as unknown as Record<string, unknown>,
+      dataSources: JSON.parse(JSON.stringify(context)),
       model: "claude-sonnet-4-20250514",
       confidence: 0.85,
       validFrom: startOfDay,

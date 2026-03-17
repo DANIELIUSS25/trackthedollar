@@ -11,7 +11,6 @@ import {
   subscriptionError,
   internalError,
 } from "@/lib/utils/api-response";
-import { CACHE_KEYS } from "@/lib/utils/constants";
 import type { MacroIndicatorId } from "@/types/macro";
 
 export const runtime = "nodejs";
