@@ -285,45 +285,77 @@ export default function DashboardPage() {
             <SectionHeader icon={<Activity />} label="Explore" />
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
               <NavCard
-                href="/debt"
-                title="National Debt"
-                description="Total debt, composition, growth, auction results"
-                icon={<Landmark className="h-5 w-5" />}
+                href="/dollar-strength"
+                title="Dollar Strength"
+                description="Trade-weighted dollar index from FRED"
+                icon={<TrendingUp className="h-5 w-5" />}
                 color="text-gold-400"
                 bgColor="bg-gold-400/10"
               />
               <NavCard
-                href="/liquidity"
-                title="Liquidity & Fed"
-                description="Fed BS, TGA, RRP, net liquidity formula"
-                icon={<Droplets className="h-5 w-5" />}
+                href="/debt"
+                title="National Debt"
+                description="Total debt, composition, daily changes"
+                icon={<Landmark className="h-5 w-5" />}
+                color="text-negative"
+                bgColor="bg-negative/10"
+              />
+              <NavCard
+                href="/rates"
+                title="Interest Rates"
+                description="Fed funds, Treasury yields, yield curve"
+                icon={<TrendingUp className="h-5 w-5" />}
                 color="text-info"
                 bgColor="bg-info/10"
               />
               <NavCard
-                href="/fiscal"
-                title="Fiscal Flows"
-                description="Receipts, outlays, deficit, spending breakdown"
-                icon={<Receipt className="h-5 w-5" />}
+                href="/money-supply"
+                title="Money Supply"
+                description="M2, Fed balance sheet, reserves"
+                icon={<Droplets className="h-5 w-5" />}
                 color="text-positive"
                 bgColor="bg-positive/10"
               />
               <NavCard
-                href="/markets"
-                title="Dollar & Markets"
-                description="Yields, curve, money supply, inflation"
-                icon={<TrendingUp className="h-5 w-5" />}
+                href="/inflation"
+                title="Inflation"
+                description="CPI, Core CPI, breakeven rates"
+                icon={<Receipt className="h-5 w-5" />}
                 color="text-purple-400"
                 bgColor="bg-purple-400/10"
+              />
+              <NavCard
+                href="/defense"
+                title="Defense Spending"
+                description="DoD obligations and outlays from USAspending"
+                icon={<Landmark className="h-5 w-5" />}
+                color="text-negative"
+                bgColor="bg-negative/10"
+              />
+              <NavCard
+                href="/foreign-assistance"
+                title="Foreign Assistance"
+                description="U.S. foreign aid flows from USAID"
+                icon={<TrendingUp className="h-5 w-5" />}
+                color="text-info"
+                bgColor="bg-info/10"
+              />
+              <NavCard
+                href="/source-health"
+                title="Source Health"
+                description="Live status of all government data feeds"
+                icon={<Activity className="h-5 w-5" />}
+                color="text-positive"
+                bgColor="bg-positive/10"
               />
             </div>
           </section>
 
           {/* ─── Source Footer ────────────────────────────── */}
           <SourceFooter
-            sources={["U.S. Treasury FiscalData API", "Federal Reserve FRED", "Calculated composites"]}
+            sources={["U.S. Treasury FiscalData API", "Federal Reserve FRED", "Bureau of Labor Statistics", "USAspending.gov", "USAID Open Data"]}
             lastFetched={lastRefresh}
-            methodology="All data sourced from official U.S. government APIs. Net Liquidity = Fed Balance Sheet − TGA − RRP."
+            methodology="All data sourced from official U.S. government APIs. No third-party intermediaries. No proprietary models."
           />
         </div>
       </Shell>

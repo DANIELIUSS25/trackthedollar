@@ -99,6 +99,33 @@ export default function MethodologyPage() {
                 delay="Same day"
                 metrics={["Auction Yields", "Bid-to-Cover Ratios", "Allocation Percentages"]}
               />
+
+              <DataSourceCard
+                name="Bureau of Labor Statistics (BLS)"
+                endpoint="api.bls.gov/publicAPI/v2/timeseries/data/"
+                description="The BLS publishes the Consumer Price Index (CPI), the primary measure of inflation in the United States. We track both headline CPI and Core CPI (excluding food and energy)."
+                frequency="Monthly"
+                delay="~2 weeks after reference month"
+                metrics={["CPI All Items (CUSR0000SA0)", "Core CPI (CUSR0000SA0L1E)"]}
+              />
+
+              <DataSourceCard
+                name="USAspending.gov"
+                endpoint="api.usaspending.gov/api/v2/agency/097/"
+                description="Official source for federal spending data. We track Department of Defense (Agency 097) budgetary resources, obligations, and outlays across fiscal years."
+                frequency="Annual (by fiscal year)"
+                delay="Varies (quarterly updates)"
+                metrics={["DoD Budgetary Resources", "DoD Obligations", "DoD Outlays", "DoD Contract Awards"]}
+              />
+
+              <DataSourceCard
+                name="Foreign Assistance — USAID Open Data"
+                endpoint="data.usaid.gov/resource/k87i-9i5x.json"
+                description="U.S. foreign assistance data from the USAID open data portal via Socrata API. Covers economic, military, and humanitarian aid by country and sector."
+                frequency="Annual"
+                delay="Varies"
+                metrics={["Total Obligations by Country", "Total Disbursements", "Security Assistance"]}
+              />
             </div>
           </section>
 
@@ -125,6 +152,28 @@ export default function MethodologyPage() {
                 caveats={[
                   "Debt only updates on business days; weekends show no change",
                   "Large single-day swings often reflect auction settlement timing, not fiscal policy changes",
+                ]}
+              />
+
+              <CalculationCard
+                name="Monetary Expansion Proxy"
+                formula="Score = 0.35 × WALCL_z + 0.30 × WRESBAL_z + 0.20 × M2_growth_z + 0.15 × debt_velocity_norm"
+                description="A composite score (0–100) estimating monetary expansion pressure. Uses z-scores over rolling windows to normalize each component, then weights them into a single indicator."
+                caveats={[
+                  "This is a derived estimate, not a published government statistic",
+                  "Z-scores are sensitive to the lookback window chosen (13 weeks)",
+                  "Does not capture all monetary policy channels (e.g., forward guidance, credit conditions)",
+                ]}
+              />
+
+              <CalculationCard
+                name="War Spending Proxy"
+                formula="Score = 0.45 × DoD_obligations_z + 0.20 × contract_share_z + 0.35 × security_aid_z"
+                description="A composite score (0–100) estimating defense/military spending activity. Combines DoD obligation growth, the share of contracts in awards, and security assistance growth."
+                caveats={[
+                  "This is a derived estimate, not a published government statistic",
+                  "Annual data means slow signal updates",
+                  "Security assistance classification depends on sector labels in USAID data",
                 ]}
               />
 
@@ -309,6 +358,9 @@ const FREQUENCY_TABLE = [
   { metric: "M2 Money Supply", sourceFreq: "Monthly", cacheTtl: "24 hours", freshness: "Monthly", dotClass: "status-recent", freshnessColor: "text-warning" },
   { metric: "CPI / Inflation", sourceFreq: "Monthly", cacheTtl: "24 hours", freshness: "Monthly", dotClass: "status-recent", freshnessColor: "text-warning" },
   { metric: "Debt-to-GDP", sourceFreq: "Quarterly", cacheTtl: "24 hours", freshness: "Quarterly", dotClass: "status-static", freshnessColor: "text-muted-foreground" },
+  { metric: "Dollar Index (DTWEXBGS)", sourceFreq: "Weekly", cacheTtl: "5 min", freshness: "Weekly", dotClass: "status-recent", freshnessColor: "text-warning" },
+  { metric: "Defense Spending (DoD)", sourceFreq: "Annual (FY)", cacheTtl: "1 hour", freshness: "Annual", dotClass: "status-static", freshnessColor: "text-muted-foreground" },
+  { metric: "Foreign Assistance", sourceFreq: "Annual", cacheTtl: "1 hour", freshness: "Annual", dotClass: "status-static", freshnessColor: "text-muted-foreground" },
 ];
 
 const LIMITATIONS = [
