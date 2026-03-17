@@ -2,7 +2,7 @@
 
 export const APP_NAME = "TrackTheDollar";
 export const APP_DESCRIPTION =
-  "Institutional-grade macro intelligence platform tracking the U.S. dollar system — national debt, Fed liquidity, fiscal flows, and Treasury operations.";
+  "U.S. national debt just hit $39 trillion. Track every dollar — real-time debt, Fed liquidity, defense spending, inflation, interest rates, and foreign aid from official government APIs.";
 export const APP_URL =
   process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
 export const APP_TAGLINE = "The U.S. Dollar System. Tracked.";

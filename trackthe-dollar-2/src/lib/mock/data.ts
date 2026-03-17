@@ -51,9 +51,9 @@ export const MOCK_KPI_METRICS = [
   {
     id: "total_debt",
     label: "National Debt",
-    value: 36_218_000_000_000,
-    formattedValue: "$36.22T",
-    change: 4_700_000_000,
+    value: 39_000_000_000_000,
+    formattedValue: "$39.0T",
+    change: 5_200_000_000,
     changePercent: 0.013,
     changeDirection: "positive" as const,
     invertColor: true,
@@ -519,7 +519,7 @@ export const MOCK_SOURCE_CONFIDENCE = [
 // ─── Ticker Items ────────────────────────────────────────────────────────────
 
 export const MOCK_TICKER_ITEMS = [
-  { label: "NAT'L DEBT", value: "$36.218T", change: 0.013 },
+  { label: "NAT'L DEBT", value: "$39.0T", change: 7.7 },
   { label: "FED BS", value: "$6.82T", change: -0.26 },
   { label: "TGA", value: "$782B", change: 3.03 },
   { label: "RRP", value: "$147B", change: -7.55 },
