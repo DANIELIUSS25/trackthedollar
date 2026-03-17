@@ -5,35 +5,53 @@ import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
   Landmark,
-  Droplets,
-  Receipt,
-  Bell,
-  Settings,
   ChevronLeft,
   ChevronRight,
   TrendingUp,
   DollarSign,
   BookOpen,
+  Percent,
+  Banknote,
+  Shield,
+  Globe,
+  Gauge,
+  Swords,
+  Activity,
 } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 import { useUIStore } from "@/stores/useUIStore";
 
 const NAV_SECTIONS = [
   {
-    label: "Intelligence",
+    label: "Platform",
     items: [
-      { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-      { label: "National Debt", href: "/debt", icon: Landmark },
-      { label: "Liquidity & Fed", href: "/liquidity", icon: Droplets },
-      { label: "Fiscal Flows", href: "/fiscal", icon: Receipt },
-      { label: "Dollar & Markets", href: "/markets", icon: TrendingUp },
+      { label: "Overview", href: "/dashboard", icon: LayoutDashboard },
     ],
   },
   {
-    label: "Tools",
+    label: "Market Intelligence",
     items: [
-      { label: "Alerts", href: "/alerts", icon: Bell },
+      { label: "Dollar Strength", href: "/dollar-strength", icon: DollarSign },
+      { label: "National Debt", href: "/debt", icon: Landmark },
+      { label: "Inflation", href: "/inflation", icon: Percent },
+      { label: "Interest Rates", href: "/rates", icon: TrendingUp },
+      { label: "Money Supply", href: "/money-supply", icon: Banknote },
+      { label: "Defense Spending", href: "/defense", icon: Shield },
+      { label: "Foreign Assistance", href: "/foreign-assistance", icon: Globe },
+    ],
+  },
+  {
+    label: "Derived Proxies",
+    items: [
+      { label: "Monetary Expansion", href: "/monetary-expansion", icon: Gauge },
+      { label: "War Spending", href: "/war-spending", icon: Swords },
+    ],
+  },
+  {
+    label: "Transparency",
+    items: [
       { label: "Methodology", href: "/methodology", icon: BookOpen },
+      { label: "Source Health", href: "/source-health", icon: Activity },
     ],
   },
 ] as const;
@@ -91,7 +109,6 @@ export function Sidebar() {
                         : "text-muted-foreground hover:bg-surface-2 hover:text-foreground"
                     )}
                   >
-                    {/* Active indicator bar */}
                     {isActive && (
                       <div className="absolute left-0 top-1/2 h-4 w-[3px] -translate-y-1/2 rounded-r-full bg-primary" />
                     )}
@@ -112,20 +129,9 @@ export function Sidebar() {
 
       {/* ─── Bottom ────────────────────────────────────────── */}
       <div className="border-t border-border px-2 py-3">
-        <Link
-          href="/settings"
-          className={cn(
-            "group flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-surface-2 hover:text-foreground",
-            pathname === "/settings" && "bg-primary/8 text-foreground"
-          )}
-        >
-          <Settings className="h-4 w-4 shrink-0" />
-          {sidebarOpen && <span className="truncate">Settings</span>}
-        </Link>
-
         <button
           onClick={toggleSidebar}
-          className="mt-1 flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-surface-2 hover:text-foreground"
+          className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-surface-2 hover:text-foreground"
         >
           {sidebarOpen ? (
             <>
