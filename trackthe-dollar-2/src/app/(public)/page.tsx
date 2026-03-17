@@ -21,25 +21,25 @@ import {
   Lock,
   Globe,
   Layers,
-  Target,
   CheckCircle2,
 } from "lucide-react";
 
 // ─── Static data (replaced by API in production) ─────────────────────────────
 
 const TICKER_ITEMS = [
-  { label: "NAT'L DEBT", value: "$36.218T", change: 0.013 },
+  { label: "NAT'L DEBT", value: "$39.0T", change: 7.7 },
+  { label: "ALL-TIME HIGH", value: "$39T", change: 0 },
   { label: "FED BS", value: "$6.82T", change: -0.26 },
   { label: "TGA", value: "$782B", change: 3.03 },
-  { label: "RRP", value: "$147B", change: -7.55 },
   { label: "NET LIQ", value: "$5.89T", change: -0.49 },
   { label: "10Y", value: "4.32%", change: -0.69 },
   { label: "2Y", value: "4.15%", change: -0.24 },
-  { label: "SPREAD", value: "+17 bps", change: 13.3 },
   { label: "FED FUNDS", value: "4.33%", change: 0 },
   { label: "CPI", value: "2.8%", change: -3.45 },
   { label: "M2", value: "$21.67T", change: 0.41 },
   { label: "DEFICIT", value: "-$1.83T", change: -8.41 },
+  { label: "DOD SPEND", value: "$886B", change: 3.2 },
+  { label: "FOREIGN AID", value: "$55B", change: -12.1 },
   { label: "INTEREST", value: "$1.12T/yr", change: 4.38 },
 ];
 
@@ -52,10 +52,10 @@ const DAILY_CHANGES = [
 ];
 
 const FEATURED_METRICS = [
-  { label: "Debt Added Today", value: "$4.7B", sub: "≈ $54,398/second", icon: Landmark, color: "text-gold-400", bg: "bg-gold-400/10" },
+  { label: "National Debt", value: "$39.0T", sub: "ALL-TIME HIGH — just crossed $39T", icon: Landmark, color: "text-negative", bg: "bg-negative/10" },
   { label: "Interest Per Day", value: "$3.07B", sub: "$1.12T annualized", icon: TrendingUp, color: "text-purple-400", bg: "bg-purple-400/10" },
-  { label: "Days Until Debt Ceiling", value: "47", sub: "Current suspension ends May 2026", icon: Target, color: "text-negative", bg: "bg-negative/10" },
-  { label: "Debt Per Citizen", value: "$108,247", sub: "334M population", icon: DollarSign, color: "text-info", bg: "bg-info/10" },
+  { label: "Debt Per Citizen", value: "$116,766", sub: "334M population", icon: DollarSign, color: "text-gold-400", bg: "bg-gold-400/10" },
+  { label: "Defense Spending", value: "$886B", sub: "DoD FY2026 obligations", icon: Shield, color: "text-info", bg: "bg-info/10" },
 ];
 
 const FLOW_SUMMARY = {
@@ -76,36 +76,36 @@ const FLOW_SUMMARY = {
 
 const RESEARCH = [
   {
+    category: "BREAKING",
+    color: "text-negative",
+    bg: "bg-negative/10",
+    title: "National Debt Hits $39 Trillion — New All-Time High",
+    summary: "The U.S. national debt has crossed $39 trillion for the first time in history. That's $116,766 per citizen, $3.07 billion in daily interest alone, and accelerating.",
+    metric: "$39,000,000,000,000",
+    date: "Mar 2026",
+  },
+  {
     category: "FISCAL",
     color: "text-positive",
     bg: "bg-positive/10",
-    title: "Interest Expense Surpasses Defense Spending",
+    title: "Interest Expense Now Exceeds Defense Budget",
     summary: "Annual interest payments ($1.12T) now exceed the entire defense budget ($886B) for the first time — consuming 17.9% of all federal spending.",
     metric: "$1.12T vs $886B",
-    date: "Mar 10",
-  },
-  {
-    category: "LIQUIDITY",
-    color: "text-info",
-    bg: "bg-info/10",
-    title: "Reverse Repo at $147B: Liquidity Buffer Nearly Gone",
-    summary: "Down from a $2.55T peak in Dec 2022. When it hits zero, QT drains bank reserves directly — raising funding stress risk.",
-    metric: "$147B remaining",
-    date: "Mar 8",
+    date: "Mar 2026",
   },
   {
     category: "DEBT",
     color: "text-gold-400",
     bg: "bg-gold-400/10",
-    title: "Debt-to-GDP at 127.4%: Approaching WWII Levels",
-    summary: "The only time the U.S. exceeded this ratio was 1946 (118.9%). Unlike post-war, today's trajectory is accelerating. CBO projects 156% by 2034.",
-    metric: "127.4% of GDP",
-    date: "Mar 5",
+    title: "Debt-to-GDP Surpasses WWII Levels",
+    summary: "At $39T, the debt-to-GDP ratio exceeds WWII peak (118.9% in 1946). Unlike the post-war period, today's trajectory is accelerating with no slowdown in sight.",
+    metric: "137%+ of GDP",
+    date: "Mar 2026",
   },
 ];
 
 const FORECASTS = [
-  { metric: "National Debt", now: "$36.2T", projected: "$39.4T", horizon: "End FY2027", source: "CBO", trend: "up" as const },
+  { metric: "National Debt", now: "$39.0T", projected: "$42T+", horizon: "End FY2027", source: "CBO", trend: "up" as const },
   { metric: "Interest/Year", now: "$1.12T", projected: "$1.38T", horizon: "FY2027", source: "CBO", trend: "up" as const },
   { metric: "Fed Balance Sheet", now: "$6.82T", projected: "$6.2T", horizon: "End of QT", source: "FOMC", trend: "down" as const },
   { metric: "Fed Funds Rate", now: "4.33%", projected: "3.58%", horizon: "End 2026", source: "Dot Plot", trend: "down" as const },
@@ -175,23 +175,30 @@ export default function LandingPage() {
         <div className="absolute inset-0 bg-dots opacity-[0.02]" />
 
         <div className="relative mx-auto max-w-7xl px-6 pb-20 pt-24">
-          {/* Badge */}
+          {/* Breaking Alert Badge */}
+          <div className="mb-4 flex justify-center animate-reveal">
+            <div className="inline-flex items-center gap-2 rounded-full border border-negative/40 bg-negative/10 px-4 py-1.5 animate-pulse">
+              <span className="h-2 w-2 rounded-full bg-negative" />
+              <span className="label-md font-semibold text-negative">U.S. NATIONAL DEBT HITS ALL-TIME HIGH: $39 TRILLION</span>
+            </div>
+          </div>
+
           <div className="mb-8 flex justify-center animate-reveal">
             <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5">
               <Zap className="h-3 w-3 text-primary" />
-              <span className="label-md text-primary">Institutional-Grade Macro Intelligence</span>
+              <span className="label-md text-primary">7 Government Data Sources. Zero Spin. Real-Time.</span>
             </div>
           </div>
 
           {/* Headline */}
           <h1 className="animate-reveal stagger-1 mx-auto max-w-4xl text-center text-display-xl font-bold tracking-tight md:text-[3.5rem] lg:text-[4rem]">
-            The U.S. Dollar System.{" "}
-            <span className="text-gradient-gold">Tracked.</span>
+            <span className="text-negative">$39 Trillion</span> and Counting.{" "}
+            <span className="text-gradient-gold">Track Every Dollar.</span>
           </h1>
 
           <p className="animate-reveal stagger-2 mx-auto mt-6 max-w-2xl text-center text-base leading-relaxed text-muted-foreground md:text-lg">
-            Real-time national debt, Treasury operations, Fed liquidity, and fiscal flows
-            — structured and contextualized for investors, researchers, and citizens who demand transparency.
+            Real-time national debt, Fed liquidity, defense spending, inflation, interest rates,
+            and foreign aid — pulled directly from official U.S. government APIs. No middlemen. No spin.
           </p>
 
           {/* CTAs */}
@@ -217,34 +224,34 @@ export default function LandingPage() {
               <div className="grid grid-cols-1 gap-8 md:grid-cols-5">
                 <HeroStatBlock
                   label="National Debt"
-                  value="$36.22T"
-                  subValue="+$4.7B today"
+                  value="$39.0T"
+                  subValue="ALL-TIME HIGH"
                   status="live"
                   statusLabel="Treasury"
                 />
                 <div className="hidden h-full w-px bg-border md:block" />
                 <HeroStatBlock
-                  label="Net Liquidity"
-                  value="$5.89T"
-                  subValue="Fed BS − TGA − RRP"
-                  status="recent"
-                  statusLabel="FRED"
-                />
-                <div className="hidden h-full w-px bg-border md:block" />
-                <HeroStatBlock
-                  label="Annual Deficit"
-                  value="-$1.83T"
-                  subValue="FY2026 YTD"
-                  status="recent"
-                  statusLabel="FiscalData"
-                />
-                <div className="hidden h-full w-px bg-border md:block" />
-                <HeroStatBlock
                   label="Interest/Year"
                   value="$1.12T"
-                  subValue="+$47B from prior year"
+                  subValue="Now exceeds defense budget"
                   status="recent"
                   statusLabel="Treasury"
+                />
+                <div className="hidden h-full w-px bg-border md:block" />
+                <HeroStatBlock
+                  label="Defense Spending"
+                  value="$886B"
+                  subValue="DoD obligations FY2026"
+                  status="recent"
+                  statusLabel="USAspending"
+                />
+                <div className="hidden h-full w-px bg-border md:block" />
+                <HeroStatBlock
+                  label="Debt Per Citizen"
+                  value="$116,766"
+                  subValue="Every man, woman, child"
+                  status="live"
+                  statusLabel="Calculated"
                 />
               </div>
             </div>
@@ -339,53 +346,73 @@ export default function LandingPage() {
         <div className="mx-auto max-w-7xl px-6">
           <div className="mb-12 text-center">
             <h2 className="text-display-md font-bold tracking-tight">
-              Four Pillars of Dollar Intelligence
+              7 Data Sources. 12 Dashboards. Zero Spin.
             </h2>
             <p className="mt-3 text-muted-foreground">
-              Every metric that matters for understanding how dollars flow through the system.
+              Every metric that matters — pulled directly from FRED, Treasury, BLS, USAspending, and USAID.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
             <PillarCard
               icon={<Landmark className="h-6 w-6" />}
               title="National Debt"
-              description="Total public debt outstanding, debt composition, growth trajectory, Treasury auction results, and debt-to-GDP ratio."
+              description="Total public debt, composition breakdown, daily changes — direct from Treasury Fiscal Data API."
               href="/debt"
-              metrics={["Total debt outstanding", "Debt held by public vs. intragovernmental", "Daily / monthly / yearly growth rate", "Debt-to-GDP ratio"]}
-              color="text-gold-400"
-              bgColor="bg-gold-400/10"
-              stat="$36.22T"
-            />
-            <PillarCard
-              icon={<Droplets className="h-6 w-6" />}
-              title="Liquidity & Fed"
-              description="Fed balance sheet, Treasury General Account, reverse repo facility, and the net liquidity formula that drives markets."
-              href="/liquidity"
-              metrics={["Net Liquidity = Fed BS − TGA − RRP", "Quantitative Tightening pace", "TGA cash balance", "Reverse repo facility drainage"]}
-              color="text-info"
-              bgColor="bg-info/10"
-              stat="$5.89T"
-            />
-            <PillarCard
-              icon={<Receipt className="h-6 w-6" />}
-              title="Fiscal Flows"
-              description="Federal receipts, outlays, budget deficit tracking, spending by category, revenue sources, and interest expense trajectory."
-              href="/fiscal"
-              metrics={["Monthly & FYTD receipts vs. outlays", "Spending by category breakdown", "Revenue by source", "Interest expense trajectory"]}
-              color="text-positive"
-              bgColor="bg-positive/10"
-              stat="-$1.83T"
+              metrics={["$39T total debt outstanding", "Debt held by public vs. intragovernmental", "Daily change tracking", "Historical time series"]}
+              color="text-negative"
+              bgColor="bg-negative/10"
+              stat="$39.0T"
             />
             <PillarCard
               icon={<TrendingUp className="h-6 w-6" />}
-              title="Dollar & Markets"
-              description="Treasury yields, yield curve dynamics, money supply, inflation indicators, and the market pulse of the dollar system."
-              href="/markets"
-              metrics={["10Y & 2Y Treasury yields", "Yield curve spread (10Y−2Y)", "M2 money supply", "Fed Funds rate & CPI"]}
+              title="Interest Rates"
+              description="Fed funds rate, 2Y and 10Y Treasury yields, yield curve spread — all from FRED."
+              href="/rates"
+              metrics={["Federal Funds effective rate", "2Y & 10Y Treasury yields", "Yield curve spread (10Y−2Y)", "Inversion detection"]}
+              color="text-gold-400"
+              bgColor="bg-gold-400/10"
+              stat="4.33%"
+            />
+            <PillarCard
+              icon={<Receipt className="h-6 w-6" />}
+              title="Inflation"
+              description="CPI All Items, Core CPI from BLS, plus 5-Year Breakeven Inflation from FRED."
+              href="/inflation"
+              metrics={["CPI year-over-year change", "Core CPI (ex food & energy)", "5Y breakeven inflation", "Historical CPI index"]}
               color="text-purple-400"
               bgColor="bg-purple-400/10"
-              stat="4.32%"
+              stat="CPI"
+            />
+            <PillarCard
+              icon={<Droplets className="h-6 w-6" />}
+              title="Money Supply"
+              description="M2 money stock, Fed total assets (WALCL), and reserve balances — tracking monetary expansion."
+              href="/money-supply"
+              metrics={["M2 money supply", "Fed balance sheet (WALCL)", "Reserve balances at the Fed", "QT tracking"]}
+              color="text-info"
+              bgColor="bg-info/10"
+              stat="$21.7T"
+            />
+            <PillarCard
+              icon={<Shield className="h-6 w-6" />}
+              title="Defense Spending"
+              description="Department of Defense budgetary resources, obligations, and outlays from USAspending.gov."
+              href="/defense"
+              metrics={["DoD budgetary resources", "Total obligations by FY", "Total outlays", "Contract awards"]}
+              color="text-positive"
+              bgColor="bg-positive/10"
+              stat="$886B"
+            />
+            <PillarCard
+              icon={<Globe className="h-6 w-6" />}
+              title="Foreign Assistance"
+              description="U.S. foreign aid obligations and disbursements by country and sector from USAID open data."
+              href="/foreign-assistance"
+              metrics={["Total obligations by year", "Top recipient countries", "Disbursement tracking", "Security assistance"]}
+              color="text-gold-400"
+              bgColor="bg-gold-400/10"
+              stat="USAID"
             />
           </div>
         </div>
@@ -558,29 +585,47 @@ export default function LandingPage() {
           <div className="mb-6 text-center">
             <p className="label-lg text-muted-foreground">Sourced from official U.S. government data</p>
           </div>
-          <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-4 lg:grid-cols-7">
             <DataSourceItem
               icon={<Database className="h-4 w-4" />}
               name="U.S. Treasury"
-              coverage="National Debt, Auctions, DTS"
+              coverage="Debt, TGA, DTS"
               frequency="Daily"
             />
             <DataSourceItem
               icon={<BarChart3 className="h-4 w-4" />}
-              name="Federal Reserve (FRED)"
-              coverage="Fed Operations, Rates, M2"
-              frequency="Weekly"
+              name="FRED"
+              coverage="Rates, M2, Dollar Index"
+              frequency="Daily/Weekly"
             />
             <DataSourceItem
               icon={<Receipt className="h-4 w-4" />}
-              name="FiscalData.gov"
-              coverage="Receipts, Outlays, TGA"
-              frequency="Daily / Monthly"
+              name="BLS"
+              coverage="CPI, Core CPI"
+              frequency="Monthly"
+            />
+            <DataSourceItem
+              icon={<Shield className="h-4 w-4" />}
+              name="USAspending"
+              coverage="DoD Spending"
+              frequency="Annual"
+            />
+            <DataSourceItem
+              icon={<Globe className="h-4 w-4" />}
+              name="USAID"
+              coverage="Foreign Aid"
+              frequency="Annual"
+            />
+            <DataSourceItem
+              icon={<Activity className="h-4 w-4" />}
+              name="Federal Reserve"
+              coverage="Balance Sheet, Reserves"
+              frequency="Weekly"
             />
             <DataSourceItem
               icon={<FileText className="h-4 w-4" />}
-              name="Congressional Budget Office"
-              coverage="Projections, Baselines"
+              name="CBO"
+              coverage="Projections"
               frequency="Quarterly"
             />
           </div>
@@ -683,20 +728,25 @@ export default function LandingPage() {
 
             {/* Links */}
             <div>
-              <p className="label-md mb-3 text-muted-foreground">Platform</p>
+              <p className="label-md mb-3 text-muted-foreground">Market Intelligence</p>
               <ul className="space-y-2">
                 <li><Link href="/dashboard" className="text-xs text-muted-foreground transition-colors hover:text-foreground">Dashboard</Link></li>
                 <li><Link href="/debt" className="text-xs text-muted-foreground transition-colors hover:text-foreground">National Debt</Link></li>
-                <li><Link href="/liquidity" className="text-xs text-muted-foreground transition-colors hover:text-foreground">Liquidity & Fed</Link></li>
-                <li><Link href="/fiscal" className="text-xs text-muted-foreground transition-colors hover:text-foreground">Fiscal Flows</Link></li>
+                <li><Link href="/dollar-strength" className="text-xs text-muted-foreground transition-colors hover:text-foreground">Dollar Strength</Link></li>
+                <li><Link href="/rates" className="text-xs text-muted-foreground transition-colors hover:text-foreground">Interest Rates</Link></li>
+                <li><Link href="/inflation" className="text-xs text-muted-foreground transition-colors hover:text-foreground">Inflation</Link></li>
+                <li><Link href="/money-supply" className="text-xs text-muted-foreground transition-colors hover:text-foreground">Money Supply</Link></li>
+                <li><Link href="/defense" className="text-xs text-muted-foreground transition-colors hover:text-foreground">Defense Spending</Link></li>
+                <li><Link href="/foreign-assistance" className="text-xs text-muted-foreground transition-colors hover:text-foreground">Foreign Assistance</Link></li>
               </ul>
             </div>
             <div>
-              <p className="label-md mb-3 text-muted-foreground">Resources</p>
+              <p className="label-md mb-3 text-muted-foreground">Transparency</p>
               <ul className="space-y-2">
                 <li><Link href="/methodology" className="text-xs text-muted-foreground transition-colors hover:text-foreground">Methodology</Link></li>
-                <li><Link href="/upgrade" className="text-xs text-muted-foreground transition-colors hover:text-foreground">Pricing</Link></li>
-                <li><Link href="/login" className="text-xs text-muted-foreground transition-colors hover:text-foreground">Sign In</Link></li>
+                <li><Link href="/source-health" className="text-xs text-muted-foreground transition-colors hover:text-foreground">Source Health</Link></li>
+                <li><Link href="/monetary-expansion" className="text-xs text-muted-foreground transition-colors hover:text-foreground">Monetary Expansion</Link></li>
+                <li><Link href="/war-spending" className="text-xs text-muted-foreground transition-colors hover:text-foreground">War Spending</Link></li>
               </ul>
             </div>
           </div>
