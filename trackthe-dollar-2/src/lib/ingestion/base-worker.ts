@@ -183,10 +183,10 @@ export abstract class BaseIngestionWorker {
           duration: result.duration,
           recordsIn: result.recordsIn,
           recordsOut: result.recordsOut,
-          metadata: {
+          metadata: JSON.parse(JSON.stringify({
             warnings: validation.warnings,
             loadResult,
-          },
+          })),
         },
       });
 

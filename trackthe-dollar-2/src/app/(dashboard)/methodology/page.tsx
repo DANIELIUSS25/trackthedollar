@@ -7,7 +7,6 @@ import {
   Clock,
   Shield,
   AlertTriangle,
-  ExternalLink,
   CheckCircle,
 } from "lucide-react";
 

@@ -9,14 +9,14 @@ import type { TimeSeriesPoint } from "@/types/dollar";
 interface MetricCardProps {
   label: string;
   value: string;
-  change?: number | null;
-  changePercent?: number | null;
-  invertColor?: boolean;
-  unit?: string;
-  sparkline?: TimeSeriesPoint[];
-  href?: string;
-  subtitle?: string;
-  className?: string;
+  change?: number | null | undefined;
+  changePercent?: number | null | undefined;
+  invertColor?: boolean | undefined;
+  unit?: string | undefined;
+  sparkline?: TimeSeriesPoint[] | undefined;
+  href?: string | undefined;
+  subtitle?: string | undefined;
+  className?: string | undefined;
 }
 
 export function MetricCard({

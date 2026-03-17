@@ -44,7 +44,7 @@ export async function GET(): Promise<NextResponse<HealthStatus>> {
     })(),
   ]);
 
-  const allOk = dbStatus === "ok" && redisStatus === "ok";
+  const allOk = (dbStatus as string) === "ok" && (redisStatus as string) === "ok";
   const httpStatus = allOk ? 200 : 503;
   const overallStatus = allOk
     ? "ok"

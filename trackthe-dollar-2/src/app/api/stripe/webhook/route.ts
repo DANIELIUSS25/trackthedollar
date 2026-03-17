@@ -40,7 +40,9 @@ export async function POST(req: NextRequest) {
         const checkoutSession = event.data.object as Stripe.Checkout.Session;
         if (checkoutSession.mode !== "subscription") break;
 
-        const userId = checkoutSession.subscription_data?.metadata?.userId
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const sessionAny = checkoutSession as any;
+        const userId: string | undefined = sessionAny.subscription_data?.metadata?.userId
           ?? (checkoutSession.metadata?.userId as string | undefined);
 
         if (!userId) {
@@ -142,7 +144,7 @@ async function provisionSubscription(
         stripeCustomerId: subscription.customer as string,
         stripePriceId: priceId,
         stripeCurrentPeriodEnd: periodEnd,
-        status: subscription.status as string,
+        status: subscription.status as unknown as import("@prisma/client").SubscriptionStatus,
         tier,
       },
     }),

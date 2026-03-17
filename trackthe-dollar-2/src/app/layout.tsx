@@ -1,37 +1,10 @@
 // src/app/layout.tsx
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
-import localFont from "next/font/local";
 import { ThemeProvider } from "next-themes";
 import { Toaster } from "@/components/ui/toast";
 import QueryProvider from "@/components/shared/QueryProvider";
 import { APP_NAME, APP_DESCRIPTION, APP_URL } from "@/lib/utils/constants";
 import "./globals.css";
-
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-  display: "swap",
-});
-
-const jetbrainsMono = localFont({
-  src: [
-    {
-      path: "../../public/fonts/JetBrainsMono-Regular.woff2",
-      weight: "400",
-      style: "normal",
-    },
-    {
-      path: "../../public/fonts/JetBrainsMono-Medium.woff2",
-      weight: "500",
-      style: "normal",
-    },
-  ],
-  variable: "--font-mono",
-  display: "swap",
-  // Fallback to system mono if font files are not present
-  fallback: ["ui-monospace", "SFMono-Regular", "Menlo", "monospace"],
-});
 
 export const metadata: Metadata = {
   metadataBase: new URL(APP_URL),
@@ -109,7 +82,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${inter.variable} ${jetbrainsMono.variable}`}
+      className="font-sans"
     >
       <body className="min-h-screen bg-background font-sans antialiased">
         <ThemeProvider

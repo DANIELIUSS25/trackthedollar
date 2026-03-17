@@ -3,7 +3,6 @@
 
 import type {
   DebtSnapshot,
-  DebtComposition,
   FiscalSnapshot,
   SpendingCategory,
   RevenueSource,

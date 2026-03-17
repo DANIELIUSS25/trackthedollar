@@ -31,8 +31,6 @@ const jobs: RegisteredJob[] = [];
 export function registerAllJobs(): void {
   const HOUR = 60 * 60 * 1000;
   const FOUR_HOURS = 4 * HOUR;
-  const FIVE_MINUTES = 5 * 60 * 1000;
-
   // Treasury workers
   const debtWorker = new TreasuryDebtWorker();
   register("treasury-debt", () => debtWorker.run(), HOUR);
