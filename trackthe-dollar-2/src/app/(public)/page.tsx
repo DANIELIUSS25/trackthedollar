@@ -116,8 +116,9 @@ const FORECASTS = [
 export default async function LandingPage() {
   // Fetch live debt data server-side
   const debtData = await fetchNationalDebt();
-  const totalDebtMillions = debtData.totalDebt ?? 39_000_000; // fallback to $39T
-  const dailyChangeMillions = debtData.dailyChange ?? 4_700; // fallback ~$4.7B/day
+  // API returns raw dollars (e.g. 38_992_187_800_000); convert to millions for LiveDebtCounter
+  const totalDebtMillions = (debtData.totalDebt ?? 39_000_000_000_000) / 1_000_000;
+  const dailyChangeMillions = (debtData.dailyChange ?? 4_700_000_000) / 1_000_000;
   const lastDate = debtData.lastDate ?? new Date().toISOString().slice(0, 10);
 
   // Format the headline debt value for display

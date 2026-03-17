@@ -38,8 +38,9 @@ const usdCompact = new Intl.NumberFormat("en-US", {
 export default async function USDebtPage() {
   const debt = await fetchNationalDebt();
 
-  const totalDebtMillions = debt.totalDebt ?? 39_000_000;
-  const dailyChangeMillions = debt.dailyChange ?? 4_700;
+  // API returns raw dollars; convert to millions for LiveDebtCounter
+  const totalDebtMillions = (debt.totalDebt ?? 39_000_000_000_000) / 1_000_000;
+  const dailyChangeMillions = (debt.dailyChange ?? 4_700_000_000) / 1_000_000;
   const lastDate = debt.lastDate ?? new Date().toISOString().slice(0, 10);
   const perSecondUSD = (dailyChangeMillions * 1_000_000) / 86_400;
 
