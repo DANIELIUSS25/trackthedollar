@@ -3,6 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { MetricCard } from "@/components/charts/MetricCard";
 import { TimeSeriesChart } from "@/components/charts/TimeSeriesChart";
+import { ApiWarning, NoDataState } from "@/components/shared/ApiWarning";
 
 export default function DollarStrengthPage() {
   const { data, isLoading, error } = useQuery({
@@ -11,6 +12,7 @@ export default function DollarStrengthPage() {
   });
 
   const d = data?.data;
+  const warnings = data?.warnings ?? [];
 
   return (
     <main className="ml-sidebar space-y-6 p-6">
@@ -23,8 +25,9 @@ export default function DollarStrengthPage() {
 
       {isLoading && <LoadingState />}
       {error && <ErrorState message="Failed to load dollar strength data" />}
+      <ApiWarning warnings={warnings} />
 
-      {d && (
+      {d && d.current != null && (
         <>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
             <MetricCard
@@ -53,20 +56,27 @@ export default function DollarStrengthPage() {
               label="Trade-Weighted Dollar Index — Historical"
               color="#f0b429"
               height={400}
-              formatValue={(v) => v.toFixed(1)}
+              formatValue={(v: number) => v.toFixed(1)}
             />
           )}
-
-          <div className="panel p-4">
-            <h3 className="mb-2 text-sm font-medium text-foreground">About This Metric</h3>
-            <p className="text-sm text-muted-foreground">
-              The Trade-Weighted U.S. Dollar Index (Broad) measures the value of the U.S. dollar
-              relative to currencies of a broad group of major U.S. trading partners. A higher value
-              indicates a stronger dollar. Published by the Federal Reserve Board of Governors.
-            </p>
-          </div>
         </>
       )}
+
+      {d && d.current == null && !isLoading && (
+        <NoDataState
+          message="Dollar strength data is not available"
+          requiresFredKey
+        />
+      )}
+
+      <div className="panel p-4">
+        <h3 className="mb-2 text-sm font-medium text-foreground">About This Metric</h3>
+        <p className="text-sm text-muted-foreground">
+          The Trade-Weighted U.S. Dollar Index (Broad) measures the value of the U.S. dollar
+          relative to currencies of a broad group of major U.S. trading partners. A higher value
+          indicates a stronger dollar. Published by the Federal Reserve Board of Governors.
+        </p>
+      </div>
     </main>
   );
 }
@@ -85,9 +95,6 @@ function ErrorState({ message }: { message: string }) {
   return (
     <div className="panel border-negative/30 p-4">
       <p className="text-sm text-negative">{message}</p>
-      <p className="mt-1 text-xs text-muted-foreground">
-        Make sure FRED_API_KEY is set in your environment variables.
-      </p>
     </div>
   );
 }

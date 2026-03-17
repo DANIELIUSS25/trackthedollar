@@ -27,6 +27,20 @@ async function fetchWithCache<T>(key: string, fetcher: () => Promise<T>): Promis
   return data;
 }
 
+/** Safe fetch with timeout and error handling */
+async function safeFetch(url: string, init?: RequestInit): Promise<Response | null> {
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 15000);
+    const res = await fetch(url, { ...init, signal: controller.signal });
+    clearTimeout(timeout);
+    return res;
+  } catch (err) {
+    console.error(`[gov-data] Fetch failed for ${url}:`, err);
+    return null;
+  }
+}
+
 // ─── FRED API ──────────────────────────────────────────────────────────────
 
 const FRED_BASE = "https://api.stlouisfed.org";
@@ -41,7 +55,10 @@ export async function fetchFredSeries(
   options: { limit?: number; startDate?: string } = {}
 ): Promise<TimeSeriesPoint[]> {
   const apiKey = process.env.FRED_API_KEY;
-  if (!apiKey) return [];
+  if (!apiKey) {
+    console.warn(`[gov-data] FRED_API_KEY not set — skipping ${seriesId}`);
+    return [];
+  }
 
   const cacheKey = `fred:${seriesId}:${options.limit}:${options.startDate}`;
   return fetchWithCache(cacheKey, async () => {
@@ -54,10 +71,8 @@ export async function fetchFredSeries(
     });
     if (options.startDate) params.set("observation_start", options.startDate);
 
-    const res = await fetch(`${FRED_BASE}/fred/series/observations?${params}`, {
-      next: { revalidate: 300 },
-    });
-    if (!res.ok) return [];
+    const res = await safeFetch(`${FRED_BASE}/fred/series/observations?${params}`);
+    if (!res || !res.ok) return [];
     const json = await res.json();
     return (json.observations as FredObservation[])
       .filter((o) => o.value !== ".")
@@ -93,10 +108,8 @@ export async function fetchTreasuryData(
     if (options.filter) params.set("filter", options.filter);
     if (options.sort) params.set("sort", options.sort);
 
-    const res = await fetch(`${TREASURY_BASE}${endpoint}?${params}`, {
-      next: { revalidate: 300 },
-    });
-    if (!res.ok) return [];
+    const res = await safeFetch(`${TREASURY_BASE}${endpoint}?${params}`);
+    if (!res || !res.ok) return [];
     const json = await res.json();
     return json.data as TreasuryRecord[];
   });
@@ -133,21 +146,21 @@ export async function fetchBlsSeries(
     };
     if (apiKey) body.registrationkey = apiKey;
 
-    const res = await fetch(url, {
+    const res = await safeFetch(url, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
     });
-    if (!res.ok) return new Map();
+    if (!res || !res.ok) return new Map();
 
     const json = await res.json();
     const result = new Map<string, TimeSeriesPoint[]>();
 
     for (const series of json.Results?.series ?? []) {
       const points: TimeSeriesPoint[] = (series.data as BlsSeriesData[])
-        .filter((d) => d.period.startsWith("M") && d.period !== "M13")
-        .map((d) => ({
-          date: `${d.year}-${d.period.replace("M", "")}-01`,
+        .filter((d: BlsSeriesData) => d.period.startsWith("M") && d.period !== "M13")
+        .map((d: BlsSeriesData) => ({
+          date: `${d.year}-${d.period.replace("M", "").padStart(2, "0")}-01`,
           value: parseFloat(d.value),
         }))
         .reverse();
@@ -178,11 +191,10 @@ export async function fetchDefenseSpending(): Promise<{
 
     for (let fy = currentFY - 5; fy <= currentFY; fy++) {
       try {
-        const res = await fetch(
-          `${USASPENDING_BASE}/agency/097/budgetary_resources/?fiscal_year=${fy}`,
-          { next: { revalidate: 3600 } }
+        const res = await safeFetch(
+          `${USASPENDING_BASE}/agency/097/budgetary_resources/?fiscal_year=${fy}`
         );
-        if (!res.ok) continue;
+        if (!res || !res.ok) continue;
         const json = await res.json();
         const resources = json.agency_budgetary_resources?.[0];
         if (resources) {
@@ -218,31 +230,29 @@ export async function fetchForeignAssistance(): Promise<{
   const cacheKey = "usaid:foreign-assistance";
   return fetchWithCache(cacheKey, async () => {
     try {
-      const res = await fetch(
-        "https://data.usaid.gov/resource/k87i-9i5x.json?$limit=1000&$order=fiscal_year DESC",
-        { next: { revalidate: 3600 } }
+      const res = await safeFetch(
+        "https://data.usaid.gov/resource/k87i-9i5x.json?$limit=1000&$order=fiscal_year DESC"
       );
-      if (!res.ok) return { totalObligations: [], totalDisbursements: [], topCountries: [] };
+      if (!res || !res.ok) return { totalObligations: [], totalDisbursements: [], topCountries: [] };
       const data = await res.json();
 
-      // Aggregate by fiscal year
       const byYear = new Map<string, { obligations: number; disbursements: number }>();
       const byCountry = new Map<string, number>();
 
       for (const row of data) {
         const fy = row.fiscal_year || row.Fiscal_Year;
         const country = row.country_name || row.Country_Name || "Unknown";
-        const obligations = parseFloat(row.obligations || row.Obligations || "0");
-        const disbursements = parseFloat(row.disbursements || row.Disbursements || "0");
+        const obligs = parseFloat(row.obligations || row.Obligations || "0");
+        const disburse = parseFloat(row.disbursements || row.Disbursements || "0");
 
         if (fy) {
           const existing = byYear.get(fy) ?? { obligations: 0, disbursements: 0 };
-          existing.obligations += obligations;
-          existing.disbursements += disbursements;
+          existing.obligations += obligs;
+          existing.disbursements += disburse;
           byYear.set(fy, existing);
         }
 
-        byCountry.set(country, (byCountry.get(country) ?? 0) + obligations);
+        byCountry.set(country, (byCountry.get(country) ?? 0) + obligs);
       }
 
       const totalObligations = Array.from(byYear.entries())
@@ -270,7 +280,17 @@ export async function fetchForeignAssistance(): Promise<{
 /** Dollar Strength: DTWEXBGS (Trade-Weighted Broad Dollar Index) */
 export async function fetchDollarStrength() {
   const series = await fetchFredSeries("DTWEXBGS", { limit: 500 });
-  if (series.length === 0) return null;
+  if (series.length === 0) {
+    return {
+      current: null,
+      change: null,
+      changePercent: null,
+      series: [],
+      source: "FRED",
+      seriesId: "DTWEXBGS",
+      warning: !process.env.FRED_API_KEY ? "FRED_API_KEY not configured" : "No data available",
+    };
+  }
   const latest = series[series.length - 1];
   const prev = series.length > 1 ? series[series.length - 2] : latest;
   const change = latest.value - prev.value;
@@ -281,10 +301,11 @@ export async function fetchDollarStrength() {
     series,
     source: "FRED",
     seriesId: "DTWEXBGS",
+    warning: null,
   };
 }
 
-/** National Debt: Treasury Debt to the Penny */
+/** National Debt: Treasury Debt to the Penny (NO API KEY NEEDED) */
 export async function fetchNationalDebt() {
   const records = await fetchTreasuryData(
     "/v2/accounting/od/debt_to_penny",
@@ -294,7 +315,19 @@ export async function fetchNationalDebt() {
       limit: 500,
     }
   );
-  if (records.length === 0) return null;
+  if (records.length === 0) {
+    return {
+      totalDebt: null,
+      debtHeldByPublic: null,
+      intragovernmental: null,
+      dailyChange: null,
+      changePercent: null,
+      series: [],
+      lastDate: null,
+      source: "Treasury Fiscal Data",
+      warning: "Unable to reach Treasury Fiscal Data API",
+    };
+  }
 
   const series: TimeSeriesPoint[] = records
     .map((r) => ({
@@ -319,16 +352,17 @@ export async function fetchNationalDebt() {
     series,
     lastDate: latest.record_date,
     source: "Treasury Fiscal Data",
+    warning: null,
   };
 }
 
-/** Inflation: CPI All Items + Core CPI from BLS */
+/** Inflation: CPI All Items + Core CPI from BLS (no key required for v1) */
 export async function fetchInflation() {
   const blsData = await fetchBlsSeries(["CUSR0000SA0", "CUSR0000SA0L1E"]);
   const cpiAll = blsData.get("CUSR0000SA0") ?? [];
   const cpiCore = blsData.get("CUSR0000SA0L1E") ?? [];
 
-  // Also fetch breakeven inflation from FRED
+  // Also fetch breakeven inflation from FRED (needs key)
   const breakeven = await fetchFredSeries("T5YIE", { limit: 250 });
 
   // Calculate YoY change for CPI
@@ -339,6 +373,10 @@ export async function fetchInflation() {
     yoyChange = ((current - yearAgo) / yearAgo) * 100;
   }
 
+  const warnings: string[] = [];
+  if (cpiAll.length === 0) warnings.push("BLS API unavailable or returned no data");
+  if (breakeven.length === 0 && !process.env.FRED_API_KEY) warnings.push("FRED_API_KEY not set — breakeven inflation unavailable");
+
   return {
     cpiAll,
     cpiCore,
@@ -347,10 +385,11 @@ export async function fetchInflation() {
     latestCpi: cpiAll.length > 0 ? cpiAll[cpiAll.length - 1].value : null,
     latestCore: cpiCore.length > 0 ? cpiCore[cpiCore.length - 1].value : null,
     source: "Bureau of Labor Statistics",
+    warnings,
   };
 }
 
-/** Interest Rates: Fed Funds + 2Y + 10Y from FRED */
+/** Interest Rates: Fed Funds + 2Y + 10Y from FRED (needs key) */
 export async function fetchInterestRates() {
   const [fedFunds, dgs2, dgs10] = await Promise.all([
     fetchFredSeries("DFF", { limit: 500 }),
@@ -371,10 +410,11 @@ export async function fetchInterestRates() {
     treasury10Y: { current: y10, series: dgs10, seriesId: "DGS10" },
     yieldCurveSpread: y10 !== null && y2 !== null ? y10 - y2 : null,
     source: "FRED (Federal Reserve)",
+    warning: !process.env.FRED_API_KEY ? "FRED_API_KEY not configured — rates data unavailable" : null,
   };
 }
 
-/** Money Supply: M2 + Fed Total Assets + Reserve Balances */
+/** Money Supply: M2 + Fed Total Assets + Reserve Balances (needs key) */
 export async function fetchMoneySupply() {
   const [m2, walcl, reserves] = await Promise.all([
     fetchFredSeries("M2SL", { limit: 250 }),
@@ -387,6 +427,7 @@ export async function fetchMoneySupply() {
     fedTotalAssets: { series: walcl, latest: walcl.length > 0 ? walcl[walcl.length - 1].value : null, seriesId: "WALCL" },
     reserveBalances: { series: reserves, latest: reserves.length > 0 ? reserves[reserves.length - 1].value : null, seriesId: "WRESBAL" },
     source: "FRED (Federal Reserve)",
+    warning: !process.env.FRED_API_KEY ? "FRED_API_KEY not configured — money supply data unavailable" : null,
   };
 }
 
@@ -400,12 +441,17 @@ export async function fetchOverview() {
     fetchInflation(),
   ]);
 
+  const warnings: string[] = [];
+  if (!process.env.FRED_API_KEY) warnings.push("FRED_API_KEY not set — FRED-dependent data (dollar index, rates, money supply) will be unavailable");
+  if (debt.warning) warnings.push(debt.warning);
+
   return {
     debt,
     dollarStrength,
     rates,
     money,
     inflation,
+    warnings,
     timestamp: new Date().toISOString(),
   };
 }

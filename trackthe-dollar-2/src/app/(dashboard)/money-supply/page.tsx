@@ -3,6 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { MetricCard } from "@/components/charts/MetricCard";
 import { TimeSeriesChart } from "@/components/charts/TimeSeriesChart";
+import { ApiWarning, NoDataState } from "@/components/shared/ApiWarning";
 import { formatCompact } from "@/lib/utils/formatters";
 
 export default function MoneySupplyPage() {
@@ -12,6 +13,8 @@ export default function MoneySupplyPage() {
   });
 
   const d = data?.data;
+  const warnings = data?.warnings ?? [];
+  const hasData = d && (d.m2?.latest != null || d.fedTotalAssets?.latest != null);
 
   return (
     <main className="ml-sidebar space-y-6 p-6">
@@ -24,8 +27,9 @@ export default function MoneySupplyPage() {
 
       {isLoading && <LoadingState />}
       {error && <ErrorState />}
+      <ApiWarning warnings={warnings} />
 
-      {d && (
+      {hasData && (
         <>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
             <MetricCard
@@ -51,7 +55,7 @@ export default function MoneySupplyPage() {
               label="M2 Money Stock (Billions)"
               color="#f0b429"
               height={350}
-              formatValue={(v) => formatCompact(v * 1e9)}
+              formatValue={(v: number) => formatCompact(v * 1e9)}
             />
           )}
 
@@ -61,7 +65,7 @@ export default function MoneySupplyPage() {
               label="Federal Reserve Total Assets (Millions)"
               color="#3b82f6"
               height={300}
-              formatValue={(v) => formatCompact(v * 1e6)}
+              formatValue={(v: number) => formatCompact(v * 1e6)}
             />
           )}
 
@@ -71,21 +75,28 @@ export default function MoneySupplyPage() {
               label="Reserve Balances with Federal Reserve (Millions)"
               color="#16c784"
               height={300}
-              formatValue={(v) => formatCompact(v * 1e6)}
+              formatValue={(v: number) => formatCompact(v * 1e6)}
             />
           )}
-
-          <div className="panel p-4">
-            <h3 className="mb-2 text-sm font-medium text-foreground">About Money Supply</h3>
-            <p className="text-sm text-muted-foreground">
-              M2 includes currency, checking deposits, savings, money market funds, and small time
-              deposits. Fed Total Assets (WALCL) reflects the Federal Reserve&apos;s balance sheet —
-              expanding during QE, contracting during QT. Reserve Balances show how much commercial
-              banks hold at the Fed, a key indicator of banking system liquidity.
-            </p>
-          </div>
         </>
       )}
+
+      {!hasData && !isLoading && !error && (
+        <NoDataState
+          message="Money supply data is not available"
+          requiresFredKey
+        />
+      )}
+
+      <div className="panel p-4">
+        <h3 className="mb-2 text-sm font-medium text-foreground">About Money Supply</h3>
+        <p className="text-sm text-muted-foreground">
+          M2 includes currency, checking deposits, savings, money market funds, and small time
+          deposits. Fed Total Assets (WALCL) reflects the Federal Reserve&apos;s balance sheet —
+          expanding during QE, contracting during QT. Reserve Balances show how much commercial
+          banks hold at the Fed, a key indicator of banking system liquidity.
+        </p>
+      </div>
     </main>
   );
 }
