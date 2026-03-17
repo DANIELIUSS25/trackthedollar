@@ -28,9 +28,9 @@ export async function POST(req: NextRequest) {
 
   // Validate that the priceId belongs to a known plan — prevent arbitrary price injection
   const plans = getPlans();
-  const validPriceIds = plans.flatMap((p) =>
-    [p.monthlyPriceId, p.annualPriceId].filter(Boolean)
-  );
+  const validPriceIds = plans
+    .map((p) => p.stripePriceId)
+    .filter(Boolean);
 
   if (!validPriceIds.includes(priceId)) {
     return apiError("INVALID_PRICE", "Invalid plan selection.", 400);

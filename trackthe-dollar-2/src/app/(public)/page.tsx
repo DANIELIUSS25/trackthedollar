@@ -116,7 +116,7 @@ export default function LandingPage() {
     <div className="min-h-screen bg-background">
       {/* ─── Sticky Nav ────────────────────────────────────────── */}
       <header className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-md">
-        <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-6">
+        <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:px-6">
           <Link href="/" className="flex items-center gap-2.5">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary shadow-glow">
               <DollarSign className="h-4 w-4 text-primary-foreground" />
@@ -131,16 +131,16 @@ export default function LandingPage() {
             <Link href="#research" className="text-xs font-medium text-muted-foreground transition-colors hover:text-foreground">Research</Link>
             <Link href="/methodology" className="text-xs font-medium text-muted-foreground transition-colors hover:text-foreground">Methodology</Link>
           </nav>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             <Link
-              href="/login"
+              href="/pricing"
               className="hidden text-xs font-medium text-muted-foreground transition-colors hover:text-foreground sm:block"
             >
-              Sign In
+              Pro $1.99/mo
             </Link>
             <Link
               href="/dashboard"
-              className="rounded-lg bg-primary px-4 py-2 text-xs font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+              className="rounded-lg bg-primary px-3 py-2 text-xs font-medium text-primary-foreground transition-colors hover:bg-primary/90 sm:px-4"
             >
               Open Dashboard
             </Link>
@@ -174,7 +174,7 @@ export default function LandingPage() {
         <div className="absolute inset-0 glow-gold" />
         <div className="absolute inset-0 bg-dots opacity-[0.02]" />
 
-        <div className="relative mx-auto max-w-7xl px-6 pb-20 pt-24">
+        <div className="relative mx-auto max-w-7xl px-4 pb-12 pt-16 sm:px-6 sm:pb-20 sm:pt-24">
           {/* Breaking Alert Badge */}
           <div className="mb-4 flex justify-center animate-reveal">
             <div className="inline-flex items-center gap-2 rounded-full border border-negative/40 bg-negative/10 px-4 py-1.5 animate-pulse">
@@ -219,9 +219,9 @@ export default function LandingPage() {
           </div>
 
           {/* ─── Hero Live Stats ────────────────────────────── */}
-          <div className="animate-reveal stagger-4 mx-auto mt-16 max-w-5xl">
-            <div className="panel-hero p-6 md:p-8">
-              <div className="grid grid-cols-1 gap-8 md:grid-cols-5">
+          <div className="animate-reveal stagger-4 mx-auto mt-10 max-w-5xl sm:mt-16">
+            <div className="panel-hero p-4 sm:p-6 md:p-8">
+              <div className="grid grid-cols-2 gap-4 sm:gap-8 md:grid-cols-4">
                 <HeroStatBlock
                   label="National Debt"
                   value="$39.0T"
@@ -229,7 +229,6 @@ export default function LandingPage() {
                   status="live"
                   statusLabel="Treasury"
                 />
-                <div className="hidden h-full w-px bg-border md:block" />
                 <HeroStatBlock
                   label="Interest/Year"
                   value="$1.12T"
@@ -237,7 +236,6 @@ export default function LandingPage() {
                   status="recent"
                   statusLabel="Treasury"
                 />
-                <div className="hidden h-full w-px bg-border md:block" />
                 <HeroStatBlock
                   label="Defense Spending"
                   value="$886B"
@@ -245,7 +243,6 @@ export default function LandingPage() {
                   status="recent"
                   statusLabel="USAspending"
                 />
-                <div className="hidden h-full w-px bg-border md:block" />
                 <HeroStatBlock
                   label="Debt Per Citizen"
                   value="$116,766"
@@ -261,7 +258,7 @@ export default function LandingPage() {
 
       {/* ─── Live Stat Cards ─────────────────────────────────── */}
       <section className="border-b border-border py-12">
-        <div className="mx-auto max-w-7xl px-6">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {FEATURED_METRICS.map((m) => {
               const Icon = m.icon;
@@ -286,7 +283,7 @@ export default function LandingPage() {
 
       {/* ─── What Changed Today ──────────────────────────────── */}
       <section className="border-b border-border py-16">
-        <div className="mx-auto max-w-7xl px-6">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6">
           <div className="mb-8 flex items-center gap-3">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
               <Activity className="h-4 w-4 text-primary" />
@@ -343,7 +340,7 @@ export default function LandingPage() {
 
       {/* ─── Four Pillars ──────────────────────────────────────── */}
       <section id="features" className="border-b border-border py-20">
-        <div className="mx-auto max-w-7xl px-6">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6">
           <div className="mb-12 text-center">
             <h2 className="text-display-md font-bold tracking-tight">
               7 Data Sources. 12 Dashboards. Zero Spin.
@@ -491,7 +488,7 @@ export default function LandingPage() {
 
       {/* ─── Research Summary ─────────────────────────────────── */}
       <section id="research" className="border-b border-border py-20">
-        <div className="mx-auto max-w-7xl px-6">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6">
           <div className="mb-10 flex items-center justify-between">
             <div>
               <h2 className="text-display-md font-bold tracking-tight">Research & Analysis</h2>
@@ -535,7 +532,7 @@ export default function LandingPage() {
 
       {/* ─── Forecast Teaser ──────────────────────────────────── */}
       <section className="border-b border-border py-20">
-        <div className="mx-auto max-w-7xl px-6">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6">
           <div className="mb-10 text-center">
             <h2 className="text-display-md font-bold tracking-tight">Where It&apos;s Headed</h2>
             <p className="mt-3 text-muted-foreground">
@@ -581,7 +578,7 @@ export default function LandingPage() {
 
       {/* ─── Trust / Source Strip ─────────────────────────────── */}
       <section className="border-b border-border bg-card/30 py-8">
-        <div className="mx-auto max-w-7xl px-6">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6">
           <div className="mb-6 text-center">
             <p className="label-lg text-muted-foreground">Sourced from official U.S. government data</p>
           </div>
@@ -642,7 +639,7 @@ export default function LandingPage() {
 
       {/* ─── Differentiators ───────────────────────────────────── */}
       <section className="border-b border-border py-20">
-        <div className="mx-auto max-w-7xl px-6">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6">
           <div className="mb-12 text-center">
             <h2 className="text-display-md font-bold tracking-tight">
               Not Another Generic Chart Site
@@ -672,30 +669,31 @@ export default function LandingPage() {
       </section>
 
       {/* ─── Premium CTA ──────────────────────────────────────── */}
-      <section className="relative overflow-hidden py-24">
+      <section className="relative overflow-hidden py-16 sm:py-24">
         <div className="absolute inset-0 glow-gold-bottom" />
         <div className="absolute inset-0 bg-dots opacity-[0.02]" />
-        <div className="relative mx-auto max-w-7xl px-6 text-center">
+        <div className="relative mx-auto max-w-7xl px-4 text-center sm:px-6">
           <h2 className="text-display-md font-bold tracking-tight">
             Start Tracking the Dollar System
           </h2>
-          <p className="mx-auto mt-4 max-w-lg text-muted-foreground">
-            Free tier includes all core metrics and charts. Pro unlocks full historical data,
-            custom alerts, and AI-powered intelligence briefings.
+          <p className="mx-auto mt-4 max-w-lg text-sm text-muted-foreground sm:text-base">
+            All core data is free forever. Upgrade to Pro for just
+            <span className="font-semibold text-primary"> $1.99/month</span> —
+            real-time refresh, full history, custom alerts, data export, and ad-free.
           </p>
-          <div className="mt-8 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
+          <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center sm:gap-4">
             <Link
               href="/dashboard"
-              className="group inline-flex items-center gap-2 rounded-lg bg-primary px-8 py-3.5 text-sm font-medium text-primary-foreground shadow-glow transition-all hover:bg-gold-500 hover:shadow-glow-strong"
+              className="group inline-flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-8 py-3.5 text-sm font-medium text-primary-foreground shadow-glow transition-all hover:bg-gold-500 hover:shadow-glow-strong sm:w-auto"
             >
               Open Dashboard — Free
               <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
             </Link>
             <Link
-              href="/upgrade"
-              className="inline-flex items-center gap-2 rounded-lg border border-border px-8 py-3.5 text-sm font-medium text-foreground transition-colors hover:border-primary/30 hover:bg-card"
+              href="/pricing"
+              className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-border px-8 py-3.5 text-sm font-medium text-foreground transition-colors hover:border-primary/30 hover:bg-card sm:w-auto"
             >
-              View Pro Plans
+              Get Pro — $1.99/mo
             </Link>
           </div>
           <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
@@ -708,8 +706,8 @@ export default function LandingPage() {
 
       {/* ─── Footer ────────────────────────────────────────────── */}
       <footer className="border-t border-border bg-card/30">
-        <div className="mx-auto max-w-7xl px-6 py-12">
-          <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
+        <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-12">
+          <div className="grid grid-cols-2 gap-6 sm:gap-8 md:grid-cols-4">
             {/* Brand */}
             <div className="md:col-span-2">
               <div className="flex items-center gap-2.5">
@@ -741,8 +739,9 @@ export default function LandingPage() {
               </ul>
             </div>
             <div>
-              <p className="label-md mb-3 text-muted-foreground">Transparency</p>
+              <p className="label-md mb-3 text-muted-foreground">More</p>
               <ul className="space-y-2">
+                <li><Link href="/pricing" className="text-xs text-muted-foreground transition-colors hover:text-foreground">Pro — $1.99/mo</Link></li>
                 <li><Link href="/methodology" className="text-xs text-muted-foreground transition-colors hover:text-foreground">Methodology</Link></li>
                 <li><Link href="/source-health" className="text-xs text-muted-foreground transition-colors hover:text-foreground">Source Health</Link></li>
                 <li><Link href="/monetary-expansion" className="text-xs text-muted-foreground transition-colors hover:text-foreground">Monetary Expansion</Link></li>

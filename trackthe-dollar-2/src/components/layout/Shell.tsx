@@ -14,8 +14,9 @@ export function Shell({ children, className }: ShellProps) {
   return (
     <main
       className={cn(
-        "min-h-[calc(100vh-3.5rem)] transition-all duration-layout p-6",
-        sidebarOpen ? "ml-sidebar" : "ml-sidebar-sm",
+        "min-h-[calc(100vh-3.5rem)] transition-all duration-layout p-4 sm:p-6",
+        // No sidebar margin on mobile (sidebar hidden)
+        sidebarOpen ? "md:ml-sidebar" : "md:ml-sidebar-sm",
         className
       )}
     >

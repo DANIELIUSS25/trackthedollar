@@ -1,113 +1,88 @@
 // src/lib/stripe/plans.ts
-import type { Plan } from "@/types/stripe";
 
 /**
- * Plan definitions.
- * Price IDs come from env vars — never hardcode them here.
- * Monthly prices are in USD cents.
+ * Plan definitions for TrackTheDollar.
+ * Two tiers: Free (no payment) and Pro ($1.99/mo).
+ *
+ * Setup in Stripe Dashboard:
+ * 1. Go to https://dashboard.stripe.com/products → "Add product"
+ * 2. Name: "TrackTheDollar Pro"
+ * 3. Add a recurring price: $1.99/month
+ * 4. Copy the price ID (e.g. price_1Qx...) and set it as
+ *    STRIPE_PRO_PRICE_ID in your Netlify environment variables
  */
-export function getPlans(): Plan[] {
+
+export interface PlanFeature {
+  text: string;
+  available: boolean;
+}
+
+export interface PlanConfig {
+  id: string;
+  name: string;
+  price: string;           // display string
+  priceCents: number;      // cents for Stripe
+  stripePriceId: string;   // from Stripe Dashboard
+  description: string;
+  features: PlanFeature[];
+  highlighted: boolean;
+}
+
+export function getPlans(): PlanConfig[] {
   return [
     {
       id: "free",
-      tier: "USER",
       name: "Free",
-      description: "Core market data for casual investors.",
-      monthlyPriceId: "",
-      annualPriceId: "",
-      monthlyPrice: 0,
-      annualPrice: 0,
+      price: "$0",
+      priceCents: 0,
+      stripePriceId: "",
+      description: "Core macro intelligence — free forever",
       highlighted: false,
-      limits: {
-        alerts: 3,
-        watchlistItems: 10,
-        portfolios: 1,
-        refreshIntervalSeconds: 60,
-      },
       features: [
-        { text: "Real-time quotes (1-min delay)", available: true },
-        { text: "10-symbol watchlist", available: true },
-        { text: "1 portfolio", available: true },
-        { text: "3 price alerts", available: true },
-        { text: "1M historical data", available: true },
-        { text: "Macro & Fed indicators", available: false },
-        { text: "Data export (CSV)", available: false },
-        { text: "API access", available: false },
+        { text: "All 12 live dashboards", available: true },
+        { text: "7 government data sources", available: true },
+        { text: "National debt real-time tracker", available: true },
+        { text: "Basic charts & time series", available: true },
+        { text: "1-year historical data", available: true },
+        { text: "Data refreshed every 5 minutes", available: true },
+        { text: "Ad-supported", available: true },
+        { text: "Real-time 60s refresh", available: false },
+        { text: "Full 5+ year history", available: false },
+        { text: "Custom alerts", available: false },
+        { text: "CSV/JSON data export", available: false },
+        { text: "Ad-free experience", available: false },
       ],
     },
     {
       id: "pro",
-      tier: "PRO",
       name: "Pro",
-      description: "For active traders who need speed and depth.",
-      monthlyPriceId: process.env.STRIPE_PRICE_PRO_MONTHLY ?? "",
-      annualPriceId: process.env.STRIPE_PRICE_PRO_ANNUAL ?? "",
-      monthlyPrice: 2900, // $29/mo
-      annualPrice: 27840, // $278.40/yr (20% off)
+      price: "$1.99",
+      priceCents: 199,
+      stripePriceId: process.env.STRIPE_PRO_PRICE_ID ?? "",
+      description: "Full macro intelligence suite",
       highlighted: true,
-      limits: {
-        alerts: 50,
-        watchlistItems: 200,
-        portfolios: 10,
-        refreshIntervalSeconds: 15,
-      },
       features: [
-        { text: "Real-time quotes (15s refresh)", available: true },
-        { text: "200-symbol watchlist", available: true },
-        { text: "10 portfolios", available: true },
-        { text: "50 price alerts", available: true },
-        { text: "1Y historical data", available: true },
-        { text: "Macro & Fed indicators", available: true },
-        { text: "Data export (CSV)", available: true },
-        { text: "API access", available: false },
-      ],
-    },
-    {
-      id: "enterprise",
-      tier: "ENTERPRISE",
-      name: "Enterprise",
-      description: "For funds and teams that need full access.",
-      monthlyPriceId: process.env.STRIPE_PRICE_ENTERPRISE_MONTHLY ?? "",
-      annualPriceId: process.env.STRIPE_PRICE_ENTERPRISE_ANNUAL ?? "",
-      monthlyPrice: 9900, // $99/mo
-      annualPrice: 95040, // $950.40/yr (20% off)
-      highlighted: false,
-      limits: {
-        alerts: 500,
-        watchlistItems: 2000,
-        portfolios: 100,
-        refreshIntervalSeconds: 5,
-      },
-      features: [
-        { text: "Real-time quotes (5s refresh)", available: true },
-        { text: "2000-symbol watchlist", available: true },
-        { text: "100 portfolios", available: true },
-        { text: "500 price alerts", available: true },
-        { text: "5Y historical data", available: true },
-        { text: "Macro & Fed indicators", available: true },
-        { text: "Data export (CSV + JSON)", available: true },
-        { text: "REST API access", available: true },
+        { text: "Everything in Free", available: true },
+        { text: "Real-time data (60s refresh)", available: true },
+        { text: "Full historical data (5+ years)", available: true },
+        { text: "Custom price & threshold alerts", available: true },
+        { text: "CSV/JSON data export", available: true },
+        { text: "Ad-free experience", available: true },
+        { text: "Priority data delivery", available: true },
+        { text: "Email alert notifications", available: true },
+        { text: "Derived proxy analytics", available: true },
+        { text: "Support the project", available: true },
       ],
     },
   ];
 }
 
 /**
- * Map a Stripe Price ID back to a UserRole tier.
+ * Map a Stripe Price ID back to a tier.
  * Used in webhook handler to provision the correct tier.
  */
-export function getTierFromPriceId(priceId: string): "PRO" | "ENTERPRISE" | null {
-  const proPriceIds = [
-    process.env.STRIPE_PRICE_PRO_MONTHLY,
-    process.env.STRIPE_PRICE_PRO_ANNUAL,
-  ].filter(Boolean);
-
-  const enterprisePriceIds = [
-    process.env.STRIPE_PRICE_ENTERPRISE_MONTHLY,
-    process.env.STRIPE_PRICE_ENTERPRISE_ANNUAL,
-  ].filter(Boolean);
-
-  if (proPriceIds.includes(priceId)) return "PRO";
-  if (enterprisePriceIds.includes(priceId)) return "ENTERPRISE";
+export function getTierFromPriceId(priceId: string): "PRO" | null {
+  const proPriceId = process.env.STRIPE_PRO_PRICE_ID;
+  if (proPriceId && priceId === proPriceId) return "PRO";
   return null;
 }

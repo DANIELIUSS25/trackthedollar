@@ -2,16 +2,16 @@
 
 const cspHeader = `
   default-src 'self';
-  script-src 'self' 'unsafe-eval' 'unsafe-inline' https://js.stripe.com;
+  script-src 'self' 'unsafe-eval' 'unsafe-inline' https://js.stripe.com https://pagead2.googlesyndication.com https://www.googletagservices.com https://adservice.google.com https://tpc.googlesyndication.com;
   style-src 'self' 'unsafe-inline';
-  img-src 'self' blob: data: https://*.stripe.com;
-  font-src 'self';
+  img-src 'self' blob: data: https://*.stripe.com https://pagead2.googlesyndication.com https://*.google.com https://*.googleapis.com;
+  font-src 'self' https://fonts.gstatic.com;
   object-src 'none';
   base-uri 'self';
   form-action 'self';
   frame-ancestors 'none';
-  frame-src https://js.stripe.com https://hooks.stripe.com;
-  connect-src 'self' https://api.stripe.com https://*.sentry.io;
+  frame-src https://js.stripe.com https://hooks.stripe.com https://googleads.g.doubleclick.net https://tpc.googlesyndication.com https://www.google.com;
+  connect-src 'self' https://api.stripe.com https://*.sentry.io https://pagead2.googlesyndication.com https://*.google.com;
   upgrade-insecure-requests;
 `
   .replace(/\s{2,}/g, " ")

@@ -65,6 +65,8 @@ export function Sidebar() {
       className={cn(
         "fixed left-0 top-0 z-40 flex h-screen flex-col border-r border-border transition-all duration-layout",
         "bg-gradient-to-b from-card to-background",
+        // Mobile: hide completely. Desktop: toggle between expanded/collapsed
+        "hidden md:flex",
         sidebarOpen ? "w-sidebar" : "w-sidebar-sm"
       )}
     >

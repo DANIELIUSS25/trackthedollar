@@ -1,19 +1,14 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { TopBar } from "@/components/layout/TopBar";
 import { Shell } from "@/components/layout/Shell";
 import { KPIRow } from "@/components/shared/KPIRow";
-import { InteractiveChart } from "@/components/charts/InteractiveChart";
-import { YieldCurveChart } from "@/components/charts/YieldCurveChart";
-import { MiniDonutChart } from "@/components/charts/MiniDonutChart";
 import { MetricCard } from "@/components/charts/MetricCard";
 import { TickerStrip } from "@/components/charts/TickerStrip";
-import { WhatChangedToday } from "@/components/shared/WhatChangedToday";
-import { AIBriefingCard } from "@/components/shared/AIBriefingCard";
-import { EventFeed } from "@/components/shared/EventFeed";
+import { TimeSeriesChart } from "@/components/charts/TimeSeriesChart";
+import { ApiWarning, NoDataState } from "@/components/shared/ApiWarning";
 import { SourceFooter } from "@/components/shared/SourceFooter";
-import { SourceConfidencePanel } from "@/components/shared/SourceConfidencePanel";
 import {
   RefreshCw,
   Landmark,
@@ -29,53 +24,79 @@ import { cn } from "@/lib/utils/cn";
 import { useUIStore } from "@/stores/useUIStore";
 import type { TickerItem } from "@/components/charts/TickerStrip";
 
-import {
-  MOCK_KPI_METRICS,
-  MOCK_DAILY_CHANGES,
-  MOCK_EVENTS,
-  MOCK_AI_BRIEFING,
-  MOCK_YIELD_CURVE_CURRENT,
-  MOCK_SPENDING_CATEGORIES,
-  MOCK_REVENUE_SOURCES,
-  MOCK_SOURCE_CONFIDENCE,
-  MOCK_TICKER_ITEMS,
-  TIMEFRAME_OPTIONS,
-  CHART_SERIES_OPTIONS,
-  getChartData,
-} from "@/lib/mock/data";
+// ─── Formatters ───────────────────────────────────────────────────────────────
+
+function fmtCompact(v: number | null | undefined): string {
+  if (v == null) return "—";
+  const abs = Math.abs(v);
+  if (abs >= 1e12) return `$${(v / 1e12).toFixed(2)}T`;
+  if (abs >= 1e9) return `$${(v / 1e9).toFixed(1)}B`;
+  if (abs >= 1e6) return `$${(v / 1e6).toFixed(1)}M`;
+  return `$${v.toLocaleString()}`;
+}
+
+function fmtPct(v: number | null | undefined): string {
+  if (v == null) return "—";
+  return `${v.toFixed(2)}%`;
+}
+
+function fmtBps(v: number | null | undefined): string {
+  if (v == null) return "—";
+  return `${(v * 100).toFixed(0)} bps`;
+}
+
+// ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function DashboardPage() {
   const { sidebarOpen } = useUIStore();
-  const [lastRefresh] = useState(() => new Date().toISOString());
 
-  // Build ticker items
-  const tickerItems: TickerItem[] = MOCK_TICKER_ITEMS.map((m) => ({
-    label: m.label,
-    value: m.value,
-    change: m.change,
-  }));
+  const { data, isLoading, error, refetch, dataUpdatedAt } = useQuery({
+    queryKey: ["overview"],
+    queryFn: () => fetch("/api/v1/overview").then((r) => r.json()),
+    refetchInterval: 5 * 60 * 1000, // refresh every 5 min
+  });
 
-  // Stable callback for chart data
-  const handleGetChartData = useCallback((seriesId: string) => getChartData(seriesId), []);
+  const d = data?.data;
+  const warnings = data?.warnings ?? [];
+  const lastRefresh = dataUpdatedAt
+    ? new Date(dataUpdatedAt).toISOString()
+    : new Date().toISOString();
 
-  // KPI row items — top 7
-  const kpiItems = MOCK_KPI_METRICS.slice(0, 7).map((m) => ({
-    label: m.label,
-    value: m.formattedValue,
-    change: m.change,
-    changePercent: m.changePercent,
-    invertColor: m.invertColor,
-    sparkline: m.sparkline,
-  }));
+  // Build ticker items from live data
+  const tickerItems: TickerItem[] = d
+    ? [
+        { label: "NAT'L DEBT", value: fmtCompact(d.debt?.totalDebt), change: d.debt?.changePercent },
+        { label: "10Y", value: fmtPct(d.rates?.treasury10Y?.current), change: null },
+        { label: "2Y", value: fmtPct(d.rates?.treasury2Y?.current), change: null },
+        { label: "FED FUNDS", value: fmtPct(d.rates?.fedFunds?.current), change: null },
+        { label: "CPI YoY", value: d.inflation?.yoyChange ? `${d.inflation.yoyChange.toFixed(1)}%` : "—", change: null },
+        { label: "M2", value: d.money?.m2?.latest ? fmtCompact(d.money.m2.latest * 1e9) : "—", change: null },
+        { label: "FED BS", value: d.money?.fedTotalAssets?.latest ? fmtCompact(d.money.fedTotalAssets.latest * 1e6) : "—", change: null },
+        { label: "DXY", value: d.dollarStrength?.current?.toFixed(1) ?? "—", change: d.dollarStrength?.changePercent },
+      ]
+    : [];
+
+  // Build KPI row
+  const kpiItems = d
+    ? [
+        { label: "National Debt", value: fmtCompact(d.debt?.totalDebt), change: d.debt?.dailyChange, changePercent: d.debt?.changePercent, invertColor: true },
+        { label: "Debt Held by Public", value: fmtCompact(d.debt?.debtHeldByPublic), change: null, changePercent: null },
+        { label: "Fed Funds Rate", value: fmtPct(d.rates?.fedFunds?.current), change: null, changePercent: null },
+        { label: "10Y Treasury", value: fmtPct(d.rates?.treasury10Y?.current), change: null, changePercent: null },
+        { label: "Yield Spread", value: d.rates?.yieldCurveSpread != null ? fmtBps(d.rates.yieldCurveSpread) : "—", change: null, changePercent: null },
+        { label: "CPI YoY", value: d.inflation?.yoyChange ? `${d.inflation.yoyChange.toFixed(1)}%` : "—", change: null, changePercent: null },
+        { label: "Dollar Index", value: d.dollarStrength?.current?.toFixed(1) ?? "—", change: d.dollarStrength?.change, changePercent: d.dollarStrength?.changePercent },
+      ]
+    : [];
 
   return (
     <>
       <TopBar title="Dashboard" subtitle="U.S. Dollar System Overview">
         <button
-          onClick={() => window.location.reload()}
+          onClick={() => refetch()}
           className="flex items-center gap-1.5 rounded-lg border border-border bg-card px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:border-primary/30 hover:text-foreground"
         >
-          <RefreshCw className="h-3 w-3" />
+          <RefreshCw className={cn("h-3 w-3", isLoading && "animate-spin")} />
           Refresh
         </button>
         <span className="hidden text-2xs text-muted-foreground sm:block">
@@ -84,282 +105,175 @@ export default function DashboardPage() {
       </TopBar>
 
       {/* Ticker Strip */}
-      <div
-        className={cn(
-          "transition-all duration-300",
-          sidebarOpen ? "ml-sidebar" : "ml-sidebar-sm"
-        )}
-      >
-        <TickerStrip items={tickerItems} />
-      </div>
+      {tickerItems.length > 0 && (
+        <div
+          className={cn(
+            "transition-all duration-300",
+            sidebarOpen ? "md:ml-sidebar" : "md:ml-sidebar-sm"
+          )}
+        >
+          <TickerStrip items={tickerItems} />
+        </div>
+      )}
 
       <Shell>
         <div className="space-y-6">
-          {/* ─── Top KPI Row ─────────────────────────────── */}
-          <section>
-            <KPIRow items={kpiItems} />
-          </section>
+          {isLoading && <LoadingState />}
+          {error && <ErrorState />}
+          <ApiWarning warnings={warnings} />
 
-          {/* ─── What Changed Today ──────────────────────── */}
-          <WhatChangedToday changes={MOCK_DAILY_CHANGES} />
+          {!d && !isLoading && !error && (
+            <NoDataState message="Overview data unavailable — government APIs may be unreachable" />
+          )}
 
-          {/* ─── Main Chart Area ─────────────────────────── */}
-          <section>
-            <SectionHeader icon={<BarChart3 />} label="System Chart" />
-            <InteractiveChart
-              seriesOptions={[...CHART_SERIES_OPTIONS]}
-              getSeriesData={handleGetChartData}
-              timeframes={[...TIMEFRAME_OPTIONS]}
-              defaultSeries="net_liquidity"
-              height={380}
-            />
-          </section>
+          {d && (
+            <>
+              {/* ─── Top KPI Row ─────────────────────────────── */}
+              <section>
+                <KPIRow items={kpiItems} />
+              </section>
 
-          {/* ─── Two-column: Yield Curve + Spending Breakdown ── */}
-          <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-            <YieldCurveChart
-              data={MOCK_YIELD_CURVE_CURRENT}
-              title="Treasury Yield Curve"
-              height={260}
-            />
-            <MiniDonutChart
-              data={MOCK_SPENDING_CATEGORIES}
-              title="Federal Spending Breakdown"
-              centerLabel="Total"
-              centerValue="$6.25T"
-              height={220}
-            />
-          </div>
+              {/* ─── National Debt Chart ──────────────────────── */}
+              {d.debt?.series?.length > 0 && (
+                <section>
+                  <SectionHeader icon={<Landmark />} label="National Debt" />
+                  <TimeSeriesChart
+                    data={d.debt.series}
+                    label="Total Public Debt Outstanding"
+                    color="#ea3943"
+                    height={350}
+                    formatValue={(v) => fmtCompact(v)}
+                  />
+                </section>
+              )}
 
-          {/* ─── Dollar System Vitals ────────────────────── */}
-          <section>
-            <SectionHeader icon={<TrendingUp />} label="Dollar System Vitals" />
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-              {MOCK_KPI_METRICS.filter((m) =>
-                ["total_debt", "fed_balance_sheet", "tga", "rrp", "net_liquidity"].includes(m.id)
-              ).map((metric) => (
-                <MetricCard
-                  key={metric.id}
-                  label={metric.label}
-                  value={metric.formattedValue}
-                  change={metric.change}
-                  changePercent={metric.changePercent}
-                  invertColor={metric.invertColor ?? false}
-                  sparkline={metric.sparkline}
-                  href={metric.href}
-                  subtitle={new Date(metric.lastUpdated).toLocaleDateString()}
-                />
-              ))}
-            </div>
-          </section>
-
-          {/* ─── Rates & Yields ──────────────────────────── */}
-          <section>
-            <SectionHeader icon={<Landmark />} label="Rates & Yields" />
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-              {MOCK_KPI_METRICS.filter((m) =>
-                ["fed_funds", "dgs10", "yield_curve"].includes(m.id)
-              ).map((metric) => (
-                <MetricCard
-                  key={metric.id}
-                  label={metric.label}
-                  value={metric.formattedValue}
-                  change={metric.change}
-                  changePercent={metric.changePercent}
-                  sparkline={metric.sparkline}
-                  href={metric.href}
-                />
-              ))}
-            </div>
-          </section>
-
-          {/* ─── Money & Inflation ───────────────────────── */}
-          <section>
-            <SectionHeader icon={<Droplets />} label="Money & Inflation" />
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-              {MOCK_KPI_METRICS.filter((m) => ["m2", "cpi"].includes(m.id)).map((metric) => (
-                <MetricCard
-                  key={metric.id}
-                  label={metric.label}
-                  value={metric.formattedValue}
-                  change={metric.change}
-                  changePercent={metric.changePercent}
-                  invertColor={metric.invertColor ?? false}
-                  sparkline={metric.sparkline}
-                  href={metric.href}
-                />
-              ))}
-            </div>
-          </section>
-
-          {/* ─── Fiscal Metrics ──────────────────────────── */}
-          <section>
-            <SectionHeader icon={<Receipt />} label="Fiscal" />
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-              {MOCK_KPI_METRICS.filter((m) =>
-                ["deficit_ytd", "interest_expense"].includes(m.id)
-              ).map((metric) => (
-                <MetricCard
-                  key={metric.id}
-                  label={metric.label}
-                  value={metric.formattedValue}
-                  change={metric.change}
-                  changePercent={metric.changePercent}
-                  invertColor={metric.invertColor ?? false}
-                  sparkline={metric.sparkline}
-                  href={metric.href}
-                />
-              ))}
-            </div>
-          </section>
-
-          {/* ─── Revenue breakdown ───────────────────────── */}
-          <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-            <MiniDonutChart
-              data={MOCK_REVENUE_SOURCES}
-              title="Federal Revenue Sources"
-              centerLabel="Total"
-              centerValue="$4.90T"
-              height={200}
-            />
-            {/* Liquidity Formula Card */}
-            <div className="panel p-5">
-              <h3 className="mb-4 text-sm font-medium text-foreground">Net Liquidity Formula</h3>
-              <div className="rounded-lg bg-surface-2 p-4">
-                <p className="font-data text-center text-sm text-foreground">
-                  <span className="text-info">Fed BS</span>
-                  {" − "}
-                  <span className="text-gold-400">TGA</span>
-                  {" − "}
-                  <span className="text-purple-400">RRP</span>
-                  {" = "}
-                  <span className="font-bold text-primary">Net Liquidity</span>
-                </p>
-                <div className="mt-4 grid grid-cols-4 gap-3 text-center">
-                  <div>
-                    <p className="text-2xs text-info">Fed BS</p>
-                    <p className="font-data text-sm font-semibold text-foreground">$6.82T</p>
-                  </div>
-                  <div>
-                    <p className="text-2xs text-gold-400">TGA</p>
-                    <p className="font-data text-sm font-semibold text-foreground">$782B</p>
-                  </div>
-                  <div>
-                    <p className="text-2xs text-purple-400">RRP</p>
-                    <p className="font-data text-sm font-semibold text-foreground">$147B</p>
-                  </div>
-                  <div>
-                    <p className="text-2xs text-primary">Net Liq</p>
-                    <p className="font-data text-sm font-bold text-primary">$5.89T</p>
-                  </div>
+              {/* ─── Rates Section ────────────────────────────── */}
+              <section>
+                <SectionHeader icon={<TrendingUp />} label="Interest Rates" />
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                  <MetricCard
+                    label="Fed Funds Rate"
+                    value={fmtPct(d.rates?.fedFunds?.current)}
+                    href="/rates"
+                    sparkline={d.rates?.fedFunds?.series}
+                  />
+                  <MetricCard
+                    label="10Y Treasury"
+                    value={fmtPct(d.rates?.treasury10Y?.current)}
+                    href="/rates"
+                    sparkline={d.rates?.treasury10Y?.series}
+                  />
+                  <MetricCard
+                    label="2Y Treasury"
+                    value={fmtPct(d.rates?.treasury2Y?.current)}
+                    href="/rates"
+                    sparkline={d.rates?.treasury2Y?.series}
+                  />
                 </div>
-              </div>
-              <p className="mt-3 text-2xs leading-relaxed text-muted-foreground">
-                Net liquidity measures the effective amount of money available in the financial system.
-                When the Fed shrinks its balance sheet (QT) or the Treasury builds its cash pile (TGA),
-                liquidity decreases. When the RRP facility drains, that cash re-enters the system.
-              </p>
-            </div>
-          </div>
+              </section>
 
-          {/* ─── Three-column: AI Briefing + Events + Sources ─ */}
-          <div className="grid grid-cols-1 gap-4 lg:grid-cols-12">
-            <div className="lg:col-span-5">
-              <AIBriefingCard
-                title={MOCK_AI_BRIEFING.title}
-                summary={MOCK_AI_BRIEFING.summary}
-                sources={MOCK_AI_BRIEFING.sources}
-                generatedAt={MOCK_AI_BRIEFING.generatedAt}
-              />
-            </div>
-            <div className="lg:col-span-3">
-              <EventFeed events={MOCK_EVENTS} />
-            </div>
-            <div className="lg:col-span-4">
-              <SourceConfidencePanel sources={MOCK_SOURCE_CONFIDENCE} />
-            </div>
-          </div>
+              {/* ─── Money & Inflation ───────────────────────── */}
+              <section>
+                <SectionHeader icon={<Droplets />} label="Money & Inflation" />
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                  <MetricCard
+                    label="CPI YoY"
+                    value={d.inflation?.yoyChange ? `${d.inflation.yoyChange.toFixed(1)}%` : "—"}
+                    subtitle="Inflation rate"
+                    href="/inflation"
+                  />
+                  <MetricCard
+                    label="M2 Money Supply"
+                    value={d.money?.m2?.latest ? fmtCompact(d.money.m2.latest * 1e9) : "—"}
+                    href="/money-supply"
+                    sparkline={d.money?.m2?.series?.map((p: { date: string; value: number }) => ({ ...p, value: p.value * 1e9 }))}
+                  />
+                  <MetricCard
+                    label="Fed Total Assets"
+                    value={d.money?.fedTotalAssets?.latest ? fmtCompact(d.money.fedTotalAssets.latest * 1e6) : "—"}
+                    href="/money-supply"
+                    sparkline={d.money?.fedTotalAssets?.series?.map((p: { date: string; value: number }) => ({ ...p, value: p.value * 1e6 }))}
+                  />
+                </div>
+              </section>
 
-          {/* ─── Explore Navigation ──────────────────────── */}
-          <section>
-            <SectionHeader icon={<Activity />} label="Explore" />
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-              <NavCard
-                href="/dollar-strength"
-                title="Dollar Strength"
-                description="Trade-weighted dollar index from FRED"
-                icon={<TrendingUp className="h-5 w-5" />}
-                color="text-gold-400"
-                bgColor="bg-gold-400/10"
-              />
-              <NavCard
-                href="/debt"
-                title="National Debt"
-                description="Total debt, composition, daily changes"
-                icon={<Landmark className="h-5 w-5" />}
-                color="text-negative"
-                bgColor="bg-negative/10"
-              />
-              <NavCard
-                href="/rates"
-                title="Interest Rates"
-                description="Fed funds, Treasury yields, yield curve"
-                icon={<TrendingUp className="h-5 w-5" />}
-                color="text-info"
-                bgColor="bg-info/10"
-              />
-              <NavCard
-                href="/money-supply"
-                title="Money Supply"
-                description="M2, Fed balance sheet, reserves"
-                icon={<Droplets className="h-5 w-5" />}
-                color="text-positive"
-                bgColor="bg-positive/10"
-              />
-              <NavCard
-                href="/inflation"
-                title="Inflation"
-                description="CPI, Core CPI, breakeven rates"
-                icon={<Receipt className="h-5 w-5" />}
-                color="text-purple-400"
-                bgColor="bg-purple-400/10"
-              />
-              <NavCard
-                href="/defense"
-                title="Defense Spending"
-                description="DoD obligations and outlays from USAspending"
-                icon={<Landmark className="h-5 w-5" />}
-                color="text-negative"
-                bgColor="bg-negative/10"
-              />
-              <NavCard
-                href="/foreign-assistance"
-                title="Foreign Assistance"
-                description="U.S. foreign aid flows from USAID"
-                icon={<TrendingUp className="h-5 w-5" />}
-                color="text-info"
-                bgColor="bg-info/10"
-              />
-              <NavCard
-                href="/source-health"
-                title="Source Health"
-                description="Live status of all government data feeds"
-                icon={<Activity className="h-5 w-5" />}
-                color="text-positive"
-                bgColor="bg-positive/10"
-              />
-            </div>
-          </section>
+              {/* ─── CPI Chart ────────────────────────────────── */}
+              {d.inflation?.cpiAll?.length > 0 && (
+                <section>
+                  <SectionHeader icon={<Receipt />} label="CPI All Items" />
+                  <TimeSeriesChart
+                    data={d.inflation.cpiAll}
+                    label="CPI — All Items (Seasonally Adjusted)"
+                    color="#f0b429"
+                    height={300}
+                    formatValue={(v) => v.toFixed(1)}
+                  />
+                </section>
+              )}
 
-          {/* ─── Source Footer ────────────────────────────── */}
-          <SourceFooter
-            sources={["U.S. Treasury FiscalData API", "Federal Reserve FRED", "Bureau of Labor Statistics", "USAspending.gov", "USAID Open Data"]}
-            lastFetched={lastRefresh}
-            methodology="All data sourced from official U.S. government APIs. No third-party intermediaries. No proprietary models."
-          />
+              {/* ─── Dollar Strength Chart ────────────────────── */}
+              {d.dollarStrength?.series?.length > 0 && (
+                <section>
+                  <SectionHeader icon={<BarChart3 />} label="Dollar Strength Index" />
+                  <TimeSeriesChart
+                    data={d.dollarStrength.series}
+                    label="Trade-Weighted Broad Dollar Index (DTWEXBGS)"
+                    color="#3b82f6"
+                    height={300}
+                    formatValue={(v) => v.toFixed(1)}
+                  />
+                </section>
+              )}
+
+              {/* ─── Explore Navigation ──────────────────────── */}
+              <section>
+                <SectionHeader icon={<Activity />} label="Explore" />
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                  <NavCard href="/debt" title="National Debt" description="Total debt, composition, daily changes" icon={<Landmark className="h-5 w-5" />} color="text-negative" bgColor="bg-negative/10" />
+                  <NavCard href="/rates" title="Interest Rates" description="Fed funds, Treasury yields, yield curve" icon={<TrendingUp className="h-5 w-5" />} color="text-info" bgColor="bg-info/10" />
+                  <NavCard href="/inflation" title="Inflation" description="CPI, Core CPI, breakeven rates" icon={<Receipt className="h-5 w-5" />} color="text-purple-400" bgColor="bg-purple-400/10" />
+                  <NavCard href="/money-supply" title="Money Supply" description="M2, Fed balance sheet, reserves" icon={<Droplets className="h-5 w-5" />} color="text-positive" bgColor="bg-positive/10" />
+                  <NavCard href="/dollar-strength" title="Dollar Strength" description="Trade-weighted dollar index" icon={<TrendingUp className="h-5 w-5" />} color="text-gold-400" bgColor="bg-gold-400/10" />
+                  <NavCard href="/defense" title="Defense Spending" description="DoD obligations from USAspending" icon={<Landmark className="h-5 w-5" />} color="text-negative" bgColor="bg-negative/10" />
+                  <NavCard href="/foreign-assistance" title="Foreign Assistance" description="U.S. foreign aid from USAID" icon={<TrendingUp className="h-5 w-5" />} color="text-info" bgColor="bg-info/10" />
+                  <NavCard href="/source-health" title="Source Health" description="Live status of all data feeds" icon={<Activity className="h-5 w-5" />} color="text-positive" bgColor="bg-positive/10" />
+                </div>
+              </section>
+
+              {/* ─── Source Footer ────────────────────────────── */}
+              <SourceFooter
+                sources={["U.S. Treasury FiscalData API", "Federal Reserve FRED", "Bureau of Labor Statistics", "USAspending.gov", "USAID Open Data"]}
+                lastFetched={lastRefresh}
+                methodology="All data sourced from official U.S. government APIs. No third-party intermediaries."
+              />
+            </>
+          )}
         </div>
       </Shell>
     </>
+  );
+}
+
+// ─── Sub-components ─────────────────────────────────────────────────────────
+
+function LoadingState() {
+  return (
+    <div className="space-y-4">
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4 xl:grid-cols-7">
+        {Array.from({ length: 7 }).map((_, i) => (
+          <div key={i} className="panel h-20 animate-pulse bg-surface-1" />
+        ))}
+      </div>
+      <div className="panel h-80 animate-pulse bg-surface-1" />
+    </div>
+  );
+}
+
+function ErrorState() {
+  return (
+    <div className="panel border-negative/30 p-4">
+      <p className="text-sm text-negative">Failed to load dashboard data. Please try refreshing.</p>
+    </div>
   );
 }
 
