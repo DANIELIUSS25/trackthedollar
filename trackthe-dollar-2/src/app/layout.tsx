@@ -9,16 +9,22 @@ import "./globals.css";
 export const metadata: Metadata = {
   metadataBase: new URL(APP_URL),
   title: {
-    default: APP_NAME,
+    default: `${APP_NAME} — U.S. National Debt Live Tracker | $39 Trillion`,
     template: `%s — ${APP_NAME}`,
   },
-  description: APP_DESCRIPTION,
+  description:
+    "Track the U.S. national debt live. The debt has crossed $39 trillion and is rising every second. Real-time data on national debt, dollar strength, inflation, interest rates, defense spending, and money supply — sourced exclusively from official U.S. government agencies.",
   keywords: [
+    "US national debt tracker",
+    "national debt live",
+    "US debt clock",
     "track the dollar",
+    "$39 trillion debt",
     "national debt 39 trillion",
-    "us national debt tracker",
-    "us debt clock live",
+    "federal debt live",
     "national debt all time high",
+    "us national debt live counter",
+    "national debt clock 2026",
     "fed balance sheet",
     "treasury general account",
     "net liquidity tracker",
@@ -27,12 +33,13 @@ export const metadata: Metadata = {
     "inflation tracker cpi",
     "interest rates fed funds",
     "money supply m2",
-    "war spending proxy",
     "fiscal data",
     "macro intelligence platform",
     "federal spending tracker",
     "budget deficit 2026",
     "dollar strength index",
+    "trackthedollar",
+    "trackthedollar.com",
   ],
   authors: [{ name: APP_NAME }],
   creator: APP_NAME,
@@ -91,6 +98,13 @@ export default function RootLayout({ children }: RootLayoutProps) {
       suppressHydrationWarning
       className="font-sans"
     >
+      <head>
+        <script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9686970386773995"
+          crossOrigin="anonymous"
+        />
+      </head>
       <body className="min-h-screen bg-background font-sans antialiased">
         <ThemeProvider
           attribute="class"

@@ -1,4 +1,6 @@
 // src/app/(public)/page.tsx — Premium landing page for TrackTheDollar.com
+import { fetchNationalDebt } from "@/lib/api/gov-data";
+import { LiveDebtCounter } from "@/components/shared/LiveDebtCounter";
 import Link from "next/link";
 import {
   DollarSign,
@@ -111,7 +113,17 @@ const FORECASTS = [
   { metric: "Fed Funds Rate", now: "4.33%", projected: "3.58%", horizon: "End 2026", source: "Dot Plot", trend: "down" as const },
 ];
 
-export default function LandingPage() {
+export default async function LandingPage() {
+  // Fetch live debt data server-side
+  const debtData = await fetchNationalDebt();
+  const totalDebtMillions = debtData.totalDebt ?? 39_000_000; // fallback to $39T
+  const dailyChangeMillions = debtData.dailyChange ?? 4_700; // fallback ~$4.7B/day
+  const lastDate = debtData.lastDate ?? new Date().toISOString().slice(0, 10);
+
+  // Format the headline debt value for display
+  const debtInTrillions = totalDebtMillions / 1_000_000;
+  const debtDisplay = `$${debtInTrillions.toFixed(1)}T`;
+
   return (
     <div className="min-h-screen bg-background">
       {/* ─── Sticky Nav ────────────────────────────────────────── */}
@@ -192,17 +204,36 @@ export default function LandingPage() {
 
           {/* Headline */}
           <h1 className="animate-reveal stagger-1 mx-auto max-w-4xl text-center text-display-xl font-bold tracking-tight md:text-[3.5rem] lg:text-[4rem]">
-            <span className="text-negative">$39 Trillion</span> and Counting.{" "}
+            <span className="text-negative">{debtDisplay} Trillion</span> and Counting.{" "}
             <span className="text-gradient-gold">Track Every Dollar.</span>
           </h1>
 
-          <p className="animate-reveal stagger-2 mx-auto mt-6 max-w-2xl text-center text-base leading-relaxed text-muted-foreground md:text-lg">
+          {/* Live Debt Counter */}
+          <div className="animate-reveal stagger-2 mx-auto mt-6 flex flex-col items-center gap-2">
+            <div className="flex items-center gap-2">
+              <span className="h-2 w-2 animate-pulse rounded-full bg-negative" />
+              <span className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+                Live National Debt Counter
+              </span>
+            </div>
+            <LiveDebtCounter
+              totalDebtMillions={totalDebtMillions}
+              dailyChangeMillions={dailyChangeMillions}
+              lastDate={lastDate}
+              className="text-4xl font-bold text-negative md:text-5xl lg:text-6xl"
+            />
+            <p className="text-xs text-muted-foreground">
+              Extrapolated in real time · Source: U.S. Treasury Fiscal Data
+            </p>
+          </div>
+
+          <p className="animate-reveal stagger-3 mx-auto mt-6 max-w-2xl text-center text-base leading-relaxed text-muted-foreground md:text-lg">
             Real-time national debt, Fed liquidity, defense spending, inflation, interest rates,
             and foreign aid — pulled directly from official U.S. government APIs. No middlemen. No spin.
           </p>
 
           {/* CTAs */}
-          <div className="animate-reveal stagger-3 mt-10 flex items-center justify-center gap-4">
+          <div className="animate-reveal stagger-4 mt-10 flex items-center justify-center gap-4">
             <Link
               href="/dashboard"
               className="group inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-3 text-sm font-medium text-primary-foreground shadow-glow transition-all hover:bg-gold-500 hover:shadow-glow-strong"
@@ -224,8 +255,8 @@ export default function LandingPage() {
               <div className="grid grid-cols-1 gap-8 md:grid-cols-5">
                 <HeroStatBlock
                   label="National Debt"
-                  value="$39.0T"
-                  subValue="ALL-TIME HIGH"
+                  value={debtDisplay}
+                  subValue="ALL-TIME HIGH — LIVE"
                   status="live"
                   statusLabel="Treasury"
                 />
