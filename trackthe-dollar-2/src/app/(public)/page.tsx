@@ -130,12 +130,9 @@ export default async function LandingPage() {
       {/* ─── Sticky Nav ────────────────────────────────────────── */}
       <header className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-md">
         <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-6">
-          <Link href="/" className="flex items-center gap-2.5">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary shadow-glow">
-              <DollarSign className="h-4 w-4 text-primary-foreground" />
-            </div>
-            <span className="text-sm font-semibold tracking-tight">
-              TrackThe<span className="text-primary">Dollar</span>
+          <Link href="/" className="flex items-center">
+            <span className="text-sm font-bold tracking-tight">
+              TrackThe<span className="text-primary">Dollar</span><span className="text-[11px] font-semibold text-primary/70">.com</span>
             </span>
           </Link>
           <nav className="hidden items-center gap-6 md:flex">
@@ -744,12 +741,9 @@ export default async function LandingPage() {
           <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
             {/* Brand */}
             <div className="md:col-span-2">
-              <div className="flex items-center gap-2.5">
-                <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary">
-                  <DollarSign className="h-3.5 w-3.5 text-primary-foreground" />
-                </div>
-                <span className="text-sm font-semibold">
-                  TrackThe<span className="text-primary">Dollar</span>.com
+              <div className="flex items-center">
+                <span className="text-sm font-bold">
+                  TrackThe<span className="text-primary">Dollar</span><span className="text-[11px] font-semibold text-primary/70">.com</span>
                 </span>
               </div>
               <p className="mt-3 max-w-sm text-xs leading-relaxed text-muted-foreground">

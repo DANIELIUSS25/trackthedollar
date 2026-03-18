@@ -70,17 +70,16 @@ export function Sidebar() {
     >
       {/* ─── Logo ──────────────────────────────────────────── */}
       <div className="flex h-14 items-center border-b border-border px-4">
-        <Link href="/dashboard" className="flex items-center gap-2.5 overflow-hidden">
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary shadow-glow">
-            <DollarSign className="h-4 w-4 text-primary-foreground" />
-          </div>
-          {sidebarOpen && (
+        <Link href="/dashboard" className="flex items-center gap-2 overflow-hidden">
+          {sidebarOpen ? (
             <div className="flex flex-col">
-              <span className="text-sm font-semibold leading-tight tracking-tight">
-                TrackThe<span className="text-primary">Dollar</span>
+              <span className="text-sm font-bold leading-tight tracking-tight">
+                TrackThe<span className="text-primary">Dollar</span><span className="text-[11px] font-semibold text-primary/70">.com</span>
               </span>
               <span className="text-2xs text-muted-foreground">Macro Intelligence</span>
             </div>
+          ) : (
+            <span className="font-mono text-base font-black text-primary">$</span>
           )}
         </Link>
       </div>
