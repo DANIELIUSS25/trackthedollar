@@ -95,10 +95,10 @@ export function TDAgentWidget() {
   }
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3">
+    <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 flex flex-col items-end gap-3">
       {/* Chat panel */}
       {open && (
-        <div className="flex w-[360px] flex-col rounded-2xl border border-border bg-card shadow-2xl shadow-black/40 overflow-hidden max-h-[520px]">
+        <div className="flex w-[calc(100vw-2rem)] sm:w-[360px] flex-col rounded-2xl border border-border bg-card shadow-2xl shadow-black/40 overflow-hidden max-h-[75vh] sm:max-h-[520px]">
           {/* Header */}
           <div className="flex items-center justify-between border-b border-border bg-card px-4 py-3">
             <div className="flex items-center gap-2">
@@ -219,14 +219,16 @@ export function TDAgentWidget() {
       <button
         onClick={() => setOpen((v) => !v)}
         className={cn(
-          "flex items-center gap-2 rounded-full border border-border px-4 py-2.5 text-sm font-medium shadow-lg transition-all",
+          "flex items-center gap-2 rounded-full border border-border shadow-lg transition-all",
+          "px-3 py-3 sm:px-4 sm:py-2.5",
+          "text-sm font-medium",
           open
             ? "bg-card text-foreground"
             : "bg-primary text-primary-foreground hover:bg-primary/90 shadow-primary/20"
         )}
       >
         <Sparkles className="h-4 w-4" />
-        {open ? "Close" : "Ask TD Intelligence"}
+        <span className="hidden sm:inline">{open ? "Close" : "Ask TD Intelligence"}</span>
       </button>
     </div>
   );
