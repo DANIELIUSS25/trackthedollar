@@ -5,6 +5,7 @@ import { ArrowUpRight, ArrowDownRight, Minus } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 import { SparklineChart } from "./SparklineChart";
 import type { TimeSeriesPoint } from "@/types/dollar";
+import type { ReactNode } from "react";
 
 interface MetricCardProps {
   label: string;
@@ -15,7 +16,7 @@ interface MetricCardProps {
   unit?: string | undefined;
   sparkline?: TimeSeriesPoint[] | undefined;
   href?: string | undefined;
-  subtitle?: string | undefined;
+  subtitle?: ReactNode;
   className?: string | undefined;
 }
 

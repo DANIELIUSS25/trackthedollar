@@ -42,8 +42,8 @@ export function getPlans(): Plan[] {
       description: "For active traders who need speed and depth.",
       monthlyPriceId: process.env.STRIPE_PRICE_PRO_MONTHLY ?? "",
       annualPriceId: process.env.STRIPE_PRICE_PRO_ANNUAL ?? "",
-      monthlyPrice: 2900, // $29/mo
-      annualPrice: 27840, // $278.40/yr (20% off)
+      monthlyPrice: 199, // $1.99/mo
+      annualPrice: 1990, // $19.90/yr (save 17%)
       highlighted: true,
       limits: {
         alerts: 50,

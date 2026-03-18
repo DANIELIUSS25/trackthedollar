@@ -14,7 +14,7 @@ export default function ForeignAssistancePage() {
   const d = data?.data;
 
   return (
-    <main className="ml-sidebar space-y-6 p-6">
+    <main className="md:ml-sidebar space-y-6 p-6">
       <div>
         <h1 className="text-2xl font-bold">Foreign Assistance</h1>
         <p className="text-sm text-muted-foreground">

@@ -15,7 +15,7 @@ export default function MonetaryExpansionPage() {
   const d = moneySupply.data?.data;
 
   return (
-    <main className="ml-sidebar space-y-6 p-6">
+    <main className="md:ml-sidebar space-y-6 p-6">
       <div>
         <div className="mb-1 flex items-center gap-2">
           <h1 className="text-2xl font-bold">Monetary Expansion</h1>

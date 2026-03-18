@@ -431,14 +431,37 @@ export async function fetchMoneySupply() {
   };
 }
 
+/** US Average Retail Gas Price from EIA (no API key needed) */
+export async function fetchGasPrice(): Promise<{ price: number | null; date: string | null; source: string }> {
+  return fetchWithCache("gas-price", async () => {
+    // EIA Open Data API v2 — Weekly Retail Gasoline & Diesel Prices
+    // Series: EMD_EPD2D_PTE_NUS_DPG (US regular conventional gas, $/gal)
+    const url = "https://api.eia.gov/v2/petroleum/pri/gnd/data/?frequency=weekly&data[0]=value&facets[series][]=EMD_EPD2D_PTE_NUS_DPG&sort[0][column]=period&sort[0][direction]=desc&length=1&api_key=DEMO_KEY";
+    const res = await safeFetch(url);
+    if (!res?.ok) return { price: null, date: null, source: "EIA" };
+    try {
+      const json = await res.json();
+      const row = json?.response?.data?.[0];
+      return {
+        price: row?.value != null ? parseFloat(row.value) : null,
+        date: row?.period ?? null,
+        source: "EIA (Energy Information Administration)",
+      };
+    } catch {
+      return { price: null, date: null, source: "EIA" };
+    }
+  });
+}
+
 /** Overview: aggregate key metrics for dashboard */
 export async function fetchOverview() {
-  const [debt, dollarStrength, rates, money, inflation] = await Promise.all([
+  const [debt, dollarStrength, rates, money, inflation, gasPrice] = await Promise.all([
     fetchNationalDebt(),
     fetchDollarStrength(),
     fetchInterestRates(),
     fetchMoneySupply(),
     fetchInflation(),
+    fetchGasPrice(),
   ]);
 
   const warnings: string[] = [];
@@ -451,6 +474,7 @@ export async function fetchOverview() {
     rates,
     money,
     inflation,
+    gasPrice,
     warnings,
     timestamp: new Date().toISOString(),
   };

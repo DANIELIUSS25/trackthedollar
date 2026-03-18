@@ -16,7 +16,7 @@ export default function InflationPage() {
   const hasData = d && (d.latestCpi != null || d.cpiAll?.length > 0);
 
   return (
-    <main className="ml-sidebar space-y-6 p-6">
+    <main className="md:ml-sidebar space-y-6 p-6">
       <div>
         <h1 className="text-2xl font-bold">Inflation</h1>
         <p className="text-sm text-muted-foreground">

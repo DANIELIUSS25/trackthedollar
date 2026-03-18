@@ -144,10 +144,10 @@ export default async function LandingPage() {
           </nav>
           <div className="flex items-center gap-2">
             <Link
-              href="/login"
-              className="hidden text-xs font-medium text-muted-foreground transition-colors hover:text-foreground sm:block"
+              href="/upgrade"
+              className="hidden rounded-lg border border-primary/40 bg-primary/10 px-3 py-1.5 text-xs font-semibold text-primary transition-colors hover:bg-primary/20 sm:block"
             >
-              Sign In
+              Go Pro ✦
             </Link>
             <Link
               href="/dashboard"

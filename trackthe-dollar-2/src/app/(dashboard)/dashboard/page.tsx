@@ -135,6 +135,7 @@ export default function DashboardPage() {
     { label: "CPI YOY", value: fmtPct(ov?.inflation?.yoyChange), change: 0 },
     { label: "M2", value: fmtT(ov?.money?.m2?.latest), change: 0 },
     { label: "DOLLAR", value: ov?.dollarStrength?.current?.toFixed(2) ?? "—", change: ov?.dollarStrength?.changePercent ?? 0 },
+    { label: "GAS", value: ov?.gasPrice?.price != null ? `$${ov.gasPrice.price.toFixed(2)}` : "—", change: 0 },
   ];
 
   // ─── KPI row items from live data ─────────────────────────────────────────
@@ -310,6 +311,14 @@ export default function DashboardPage() {
                 invertColor
                 href="/inflation"
               />
+              {ov?.gasPrice?.price != null && (
+                <MetricCard
+                  label="Gas Price (US Avg)"
+                  value={`$${ov.gasPrice.price.toFixed(2)}/gal`}
+                  change={0}
+                  subtitle={<a href="https://gaspriceradar.com" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Full data → gaspriceradar.com</a>}
+                />
+              )}
             </div>
           </section>
 

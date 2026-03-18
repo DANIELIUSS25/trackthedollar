@@ -17,6 +17,7 @@ import {
   internalError,
 } from "@/lib/utils/api-response";
 import { getPermissions } from "@/lib/auth/permissions";
+import { fetchOverview } from "@/lib/api/gov-data";
 import { z } from "zod";
 import type { DataContext } from "@/lib/ai/types";
 
@@ -58,22 +59,18 @@ export async function POST(req: NextRequest) {
 
     const { question } = parsed.data;
 
-    // Build data context from latest internal data
-    // TODO: Replace with DailySnapshot query
+    // Build data context from live government APIs
+    const ov = await fetchOverview();
     const dataContext: DataContext = {
-      date: new Date().toISOString().split("T")[0],
-      totalDebt: 36_218_000_000_000,
-      debtChange: 4_700_000_000,
-      fedBalanceSheet: 6_820_000_000_000,
-      tgaBalance: 782_000_000_000,
-      rrpBalance: 147_000_000_000,
-      netLiquidity: 5_891_000_000_000,
-      fedFundsRate: 4.33,
-      dgs10: 4.32,
-      dgs2: 4.15,
-      yieldCurveSpread: 0.17,
-      m2: 21_670_000_000_000,
-      cpi: 2.8,
+      date: ov.debt.lastDate ?? new Date().toISOString().split("T")[0],
+      totalDebt: ov.debt.totalDebt ?? undefined,
+      debtChange: ov.debt.dailyChange ?? undefined,
+      fedBalanceSheet: ov.money.fedTotalAssets?.latest != null ? ov.money.fedTotalAssets.latest * 1e6 : undefined,
+      fedFundsRate: ov.rates.fedFunds?.current ?? undefined,
+      dgs10: ov.rates.treasury10Y?.current ?? undefined,
+      dgs2: ov.rates.treasury2Y?.current ?? undefined,
+      m2: ov.money.m2?.latest != null ? ov.money.m2.latest * 1e9 : undefined,
+      cpi: ov.inflation.yoyChange ?? undefined,
     };
 
     const result = await answerUserQuestion(question, dataContext, userId);

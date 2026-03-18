@@ -9,7 +9,7 @@ const NAV_LINKS = [
   { href: "#flows", label: "Dollar Flows" },
   { href: "#research", label: "Research" },
   { href: "/methodology", label: "Methodology" },
-  { href: "/login", label: "Sign In" },
+  { href: "/upgrade", label: "Go Pro ✦" },
 ];
 
 export function MobileLandingNav() {

@@ -17,7 +17,7 @@ export default function MoneySupplyPage() {
   const hasData = d && (d.m2?.latest != null || d.fedTotalAssets?.latest != null);
 
   return (
-    <main className="ml-sidebar space-y-6 p-6">
+    <main className="md:ml-sidebar space-y-6 p-6">
       <div>
         <h1 className="text-2xl font-bold">Money Supply</h1>
         <p className="text-sm text-muted-foreground">
