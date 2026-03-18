@@ -31,11 +31,10 @@ export function LiveDebtCounter({
   // Anchor to the start of the last recorded day
   const baseTime = useRef(new Date(lastDate).getTime()).current;
 
-  const [display, setDisplay] = useState(
-    baseUSD + perSecondUSD * ((Date.now() - baseTime) / 1000),
-  );
+  const [display, setDisplay] = useState(baseUSD);
 
   useEffect(() => {
+    setDisplay(baseUSD + perSecondUSD * ((Date.now() - baseTime) / 1000));
     if (perSecondUSD <= 0) return;
     const id = setInterval(() => {
       setDisplay(baseUSD + perSecondUSD * ((Date.now() - baseTime) / 1000));
