@@ -69,6 +69,10 @@ export function TimeSeriesChart({
             tick={{ fontSize: 10, fill: "#6b7a99" }}
             tickFormatter={(v: number) => formatValue(v)}
             width={60}
+            domain={[
+              (dataMin: number) => dataMin * 0.998,
+              (dataMax: number) => dataMax * 1.002,
+            ]}
           />
           <Tooltip
             contentStyle={{

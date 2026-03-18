@@ -167,6 +167,10 @@ export function InteractiveChart({
               tick={{ fontSize: 10, fill: "#6b7a99" }}
               tickFormatter={(v: number) => formatCompact(v)}
               width={60}
+              domain={[
+                (dataMin: number) => dataMin * 0.997,
+                (dataMax: number) => dataMax * 1.003,
+              ]}
             />
             <ReferenceLine
               y={firstVal}
