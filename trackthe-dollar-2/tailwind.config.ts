@@ -105,7 +105,7 @@ const config: Config = {
           border: "#1E2738",
           text: "#E2E8F0",
           dim: "#6b7a99",
-          highlight: "#f0b429",
+          highlight: "#22c55e",
         },
       },
       fontFamily: {
