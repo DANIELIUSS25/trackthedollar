@@ -63,14 +63,14 @@ export async function POST(req: NextRequest) {
     const ov = await fetchOverview();
     const dataContext: DataContext = {
       date: ov.debt.lastDate ?? new Date().toISOString().split("T")[0],
-      totalDebt: ov.debt.totalDebt ?? undefined,
-      debtChange: ov.debt.dailyChange ?? undefined,
-      fedBalanceSheet: ov.money.fedTotalAssets?.latest != null ? ov.money.fedTotalAssets.latest * 1e6 : undefined,
-      fedFundsRate: ov.rates.fedFunds?.current ?? undefined,
-      dgs10: ov.rates.treasury10Y?.current ?? undefined,
-      dgs2: ov.rates.treasury2Y?.current ?? undefined,
-      m2: ov.money.m2?.latest != null ? ov.money.m2.latest * 1e9 : undefined,
-      cpi: ov.inflation.yoyChange ?? undefined,
+      ...(ov.debt.totalDebt != null && { totalDebt: ov.debt.totalDebt }),
+      ...(ov.debt.dailyChange != null && { debtChange: ov.debt.dailyChange }),
+      ...(ov.money.fedTotalAssets?.latest != null && { fedBalanceSheet: ov.money.fedTotalAssets.latest * 1e6 }),
+      ...(ov.rates.fedFunds?.current != null && { fedFundsRate: ov.rates.fedFunds.current }),
+      ...(ov.rates.treasury10Y?.current != null && { dgs10: ov.rates.treasury10Y.current }),
+      ...(ov.rates.treasury2Y?.current != null && { dgs2: ov.rates.treasury2Y.current }),
+      ...(ov.money.m2?.latest != null && { m2: ov.money.m2.latest * 1e9 }),
+      ...(ov.inflation.yoyChange != null && { cpi: ov.inflation.yoyChange }),
     };
 
     const result = await answerUserQuestion(question, dataContext, userId);
