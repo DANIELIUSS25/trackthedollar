@@ -61,11 +61,24 @@ export function Sidebar() {
   const { sidebarOpen, toggleSidebar } = useUIStore();
 
   return (
+    <>
+      {/* Mobile backdrop — tap to close sidebar */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 z-30 bg-black/60 md:hidden"
+          onClick={toggleSidebar}
+          aria-hidden="true"
+        />
+      )}
     <aside
       className={cn(
         "fixed left-0 top-0 z-40 flex h-screen flex-col border-r border-border transition-all duration-layout",
         "bg-gradient-to-b from-card to-background",
-        sidebarOpen ? "w-sidebar" : "w-sidebar-sm"
+        // Desktop: always visible, width toggles between full and icon-only
+        // Mobile: slides in/out as overlay
+        sidebarOpen
+          ? "w-sidebar translate-x-0"
+          : "w-sidebar-sm -translate-x-full md:translate-x-0"
       )}
     >
       {/* ─── Logo ──────────────────────────────────────────── */}
@@ -143,5 +156,6 @@ export function Sidebar() {
         </button>
       </div>
     </aside>
+    </>
   );
 }

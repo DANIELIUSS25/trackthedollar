@@ -15,7 +15,7 @@ export function Shell({ children, className }: ShellProps) {
     <main
       className={cn(
         "min-h-[calc(100vh-3.5rem)] transition-all duration-layout p-6",
-        sidebarOpen ? "ml-sidebar" : "ml-sidebar-sm",
+        sidebarOpen ? "md:ml-sidebar" : "md:ml-sidebar-sm",
         className
       )}
     >

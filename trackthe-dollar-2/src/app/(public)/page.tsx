@@ -1,6 +1,7 @@
 // src/app/(public)/page.tsx — Premium landing page for TrackTheDollar.com
 import { fetchNationalDebt } from "@/lib/api/gov-data";
 import { LiveDebtCounter } from "@/components/shared/LiveDebtCounter";
+import { MobileLandingNav } from "@/components/shared/MobileLandingNav";
 import Link from "next/link";
 import {
   DollarSign,
@@ -129,7 +130,7 @@ export default async function LandingPage() {
     <div className="min-h-screen bg-background">
       {/* ─── Sticky Nav ────────────────────────────────────────── */}
       <header className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-md">
-        <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-6">
+        <div className="relative mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:px-6">
           <Link href="/" className="flex items-center">
             <span className="text-sm font-bold tracking-tight">
               TrackThe<span className="text-primary">Dollar</span><span className="text-[11px] font-semibold text-primary/70">.com</span>
@@ -141,7 +142,7 @@ export default async function LandingPage() {
             <Link href="#research" className="text-xs font-medium text-muted-foreground transition-colors hover:text-foreground">Research</Link>
             <Link href="/methodology" className="text-xs font-medium text-muted-foreground transition-colors hover:text-foreground">Methodology</Link>
           </nav>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             <Link
               href="/login"
               className="hidden text-xs font-medium text-muted-foreground transition-colors hover:text-foreground sm:block"
@@ -150,10 +151,12 @@ export default async function LandingPage() {
             </Link>
             <Link
               href="/dashboard"
-              className="rounded-lg bg-primary px-4 py-2 text-xs font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+              className="rounded-lg bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground transition-colors hover:bg-primary/90 sm:px-4 sm:py-2"
             >
               Open Dashboard
             </Link>
+            {/* Mobile menu button */}
+            <MobileLandingNav />
           </div>
         </div>
       </header>
@@ -201,7 +204,7 @@ export default async function LandingPage() {
           </div>
 
           {/* Headline */}
-          <h1 className="animate-reveal stagger-1 mx-auto max-w-4xl text-center text-display-xl font-bold tracking-tight md:text-[3.5rem] lg:text-[4rem]">
+          <h1 className="animate-reveal stagger-1 mx-auto max-w-4xl text-center text-[2rem] font-bold tracking-tight sm:text-display-xl md:text-[3.5rem] lg:text-[4rem]">
             <span className="text-negative">{debtDisplay} Trillion</span> and Counting.{" "}
             <span className="text-gradient-gold">Track Every Dollar.</span>
           </h1>
@@ -218,7 +221,7 @@ export default async function LandingPage() {
               totalDebtMillions={totalDebtMillions}
               dailyChangeMillions={dailyChangeMillions}
               lastDate={lastDate}
-              className="text-4xl font-bold text-negative md:text-5xl lg:text-6xl"
+              className="text-2xl font-bold text-negative sm:text-4xl md:text-5xl lg:text-6xl"
             />
             <p className="text-xs text-muted-foreground">
               Extrapolated in real time · Source: U.S. Treasury Fiscal Data
@@ -231,7 +234,7 @@ export default async function LandingPage() {
           </p>
 
           {/* CTAs */}
-          <div className="animate-reveal stagger-4 mt-10 flex items-center justify-center gap-4">
+          <div className="animate-reveal stagger-4 mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">
             <Link
               href="/dashboard"
               className="group inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-3 text-sm font-medium text-primary-foreground shadow-glow transition-all hover:bg-gold-500 hover:shadow-glow-strong"

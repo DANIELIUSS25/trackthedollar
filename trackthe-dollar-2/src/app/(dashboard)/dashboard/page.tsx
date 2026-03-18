@@ -213,7 +213,7 @@ export default function DashboardPage() {
       <div
         className={cn(
           "transition-all duration-300",
-          sidebarOpen ? "ml-sidebar" : "ml-sidebar-sm"
+          sidebarOpen ? "md:ml-sidebar" : "md:ml-sidebar-sm"
         )}
       >
         <TickerStrip items={tickerItems} />
