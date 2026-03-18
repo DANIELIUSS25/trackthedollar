@@ -84,6 +84,11 @@ interface OverviewData {
     latestCpi: number | null;
     cpiAll: TimeSeriesPoint[];
   };
+  gasPrice: {
+    price: number | null;
+    date: string | null;
+    source: string;
+  } | null;
 }
 
 interface AINarrative {
