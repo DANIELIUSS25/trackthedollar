@@ -204,8 +204,8 @@ export default function DashboardPage() {
           <RefreshCw className={cn("h-3 w-3", overviewLoading && "animate-spin")} />
           Refresh
         </button>
-        <span className="hidden text-2xs text-muted-foreground sm:block">
-          {new Date().toLocaleTimeString()}
+        <span className="hidden text-2xs text-muted-foreground sm:block" suppressHydrationWarning>
+          {new Date(lastRefresh).toLocaleTimeString()}
         </span>
       </TopBar>
 
