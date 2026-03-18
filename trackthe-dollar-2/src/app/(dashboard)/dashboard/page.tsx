@@ -181,9 +181,9 @@ export default function DashboardPage() {
 
   // ─── Yield curve from live rates (3 points) ───────────────────────────────
   const yieldCurveData = [
-    { maturity: "2Y", rate: ov?.rates?.treasury2Y?.current ?? null },
-    { maturity: "10Y", rate: ov?.rates?.treasury10Y?.current ?? null },
-  ].filter((p) => p.rate != null).map((p) => ({ maturity: p.maturity, rate: p.rate as number }));
+    { label: "2Y", value: ov?.rates?.treasury2Y?.current ?? null },
+    { label: "10Y", value: ov?.rates?.treasury10Y?.current ?? null },
+  ].filter((p) => p.value != null).map((p) => ({ label: p.label, value: p.value as number }));
 
   const handleRefresh = () => {
     setLastRefresh(new Date().toISOString());
