@@ -2,7 +2,7 @@
 
 const cspHeader = `
   default-src 'self';
-  script-src 'self' 'unsafe-eval' 'unsafe-inline' https://js.stripe.com https://pagead2.googlesyndication.com https://www.googletagservices.com https://partner.googleadservices.com https://tpc.googlesyndication.com;
+  script-src 'self' 'unsafe-eval' 'unsafe-inline' https://js.stripe.com https://pagead2.googlesyndication.com https://www.googletagservices.com https://partner.googleadservices.com https://tpc.googlesyndication.com https://*.adtrafficquality.google;
   style-src 'self' 'unsafe-inline';
   img-src 'self' blob: data: https://*.stripe.com https://pagead2.googlesyndication.com https://tpc.googlesyndication.com https://www.google.com;
   font-src 'self';
@@ -11,7 +11,7 @@ const cspHeader = `
   form-action 'self';
   frame-ancestors 'none';
   frame-src https://js.stripe.com https://hooks.stripe.com https://googleads.g.doubleclick.net https://tpc.googlesyndication.com;
-  connect-src 'self' https://api.stripe.com https://*.sentry.io https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net https://ep1.adtrafficquality.google;
+  connect-src 'self' https://api.stripe.com https://*.sentry.io https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net https://*.adtrafficquality.google;
   upgrade-insecure-requests;
 `
   .replace(/\s{2,}/g, " ")

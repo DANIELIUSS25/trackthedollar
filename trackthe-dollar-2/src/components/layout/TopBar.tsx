@@ -3,6 +3,7 @@
 import { useUIStore } from "@/stores/useUIStore";
 import { cn } from "@/lib/utils/cn";
 import { Menu, Bell } from "lucide-react";
+import { SharePopover } from "@/components/shared/SharePopover";
 
 interface TopBarProps {
   title: string;
@@ -38,6 +39,7 @@ export function TopBar({ title, subtitle, children }: TopBarProps) {
       </div>
       <div className="flex items-center gap-2">
         {children}
+        <SharePopover />
         <button
           onClick={toggleAlerts}
           className="relative flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-surface-2 hover:text-foreground"
