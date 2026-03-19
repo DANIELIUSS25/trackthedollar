@@ -44,6 +44,9 @@ function fmtT(v: number | null | undefined): string {
   if (v == null) return "—";
   return `$${(v / 1e12).toFixed(2)}T`;
 }
+// FRED M2SL is in billions; FRED WALCL is in millions — scale before fmtT
+function fmtFredB(v: number | null | undefined) { return fmtT(v != null ? v * 1e9 : null); }
+function fmtFredM(v: number | null | undefined) { return fmtT(v != null ? v * 1e6 : null); }
 function fmtB(v: number | null | undefined): string {
   if (v == null) return "—";
   if (Math.abs(v) >= 1e12) return `$${(v / 1e12).toFixed(2)}T`;
@@ -133,12 +136,12 @@ export default function DashboardPage() {
   // ─── Ticker items from live data ──────────────────────────────────────────
   const tickerItems: TickerItem[] = [
     { label: "NAT'L DEBT", value: fmtT(ov?.debt.totalDebt), change: ov?.debt.changePercent ?? 0 },
-    { label: "FED BS", value: fmtT(ov?.money?.fedTotalAssets?.latest), change: 0 },
+    { label: "FED BS", value: fmtFredM(ov?.money?.fedTotalAssets?.latest), change: 0 },
     { label: "10Y", value: fmtPct(ov?.rates?.treasury10Y?.current), change: 0 },
     { label: "2Y", value: fmtPct(ov?.rates?.treasury2Y?.current), change: 0 },
     { label: "FED FUNDS", value: fmtPct(ov?.rates?.fedFunds?.current), change: 0 },
     { label: "CPI YOY", value: fmtPct(ov?.inflation?.yoyChange), change: 0 },
-    { label: "M2", value: fmtT(ov?.money?.m2?.latest), change: 0 },
+    { label: "M2", value: fmtFredB(ov?.money?.m2?.latest), change: 0 },
     { label: "DOLLAR", value: ov?.dollarStrength?.current?.toFixed(2) ?? "—", change: ov?.dollarStrength?.changePercent ?? 0 },
     { label: "GAS", value: ov?.gasPrice?.price != null ? `$${ov.gasPrice.price.toFixed(2)}` : "—", change: 0 },
   ];
@@ -150,7 +153,7 @@ export default function DashboardPage() {
     { label: "Fed Funds", value: fmtPct(ov?.rates?.fedFunds?.current), change: 0 },
     { label: "10Y Yield", value: fmtPct(ov?.rates?.treasury10Y?.current), change: 0 },
     { label: "CPI YoY", value: fmtPct(ov?.inflation?.yoyChange), change: 0 },
-    { label: "M2 Supply", value: fmtT(ov?.money?.m2?.latest), change: 0 },
+    { label: "M2 Supply", value: fmtFredB(ov?.money?.m2?.latest), change: 0 },
     { label: "Dollar Index", value: ov?.dollarStrength?.current?.toFixed(2) ?? "—", change: ov?.dollarStrength?.change ?? 0, changePercent: ov?.dollarStrength?.changePercent ?? 0 },
   ];
 
@@ -292,13 +295,13 @@ export default function DashboardPage() {
               />
               <MetricCard
                 label="Fed Balance Sheet"
-                value={fmtT(ov?.money?.fedTotalAssets?.latest)}
+                value={fmtFredM(ov?.money?.fedTotalAssets?.latest)}
                 change={0}
                 href="/money-supply"
               />
               <MetricCard
                 label="M2 Money Supply"
-                value={fmtT(ov?.money?.m2?.latest)}
+                value={fmtFredB(ov?.money?.m2?.latest)}
                 change={0}
                 href="/money-supply"
               />
@@ -350,8 +353,8 @@ export default function DashboardPage() {
           <section>
             <SectionHeader icon={<Droplets />} label="Money & Inflation" />
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-              <MetricCard label="M2 Supply" value={fmtT(ov?.money?.m2?.latest)} href="/money-supply" />
-              <MetricCard label="Fed Balance Sheet" value={fmtT(ov?.money?.fedTotalAssets?.latest)} href="/money-supply" />
+              <MetricCard label="M2 Supply" value={fmtFredB(ov?.money?.m2?.latest)} href="/money-supply" />
+              <MetricCard label="Fed Balance Sheet" value={fmtFredM(ov?.money?.fedTotalAssets?.latest)} href="/money-supply" />
               <MetricCard label="CPI YoY" value={fmtPct(ov?.inflation?.yoyChange)} invertColor href="/inflation" />
               <MetricCard label="Latest CPI" value={ov?.inflation?.latestCpi?.toFixed(2) ?? "—"} href="/inflation" />
             </div>
@@ -382,7 +385,7 @@ export default function DashboardPage() {
                 <div className="mt-4 grid grid-cols-4 gap-3 text-center">
                   <div>
                     <p className="text-2xs text-info">Fed BS</p>
-                    <p className="font-data text-sm font-semibold text-foreground">{fmtT(fedBS)}</p>
+                    <p className="font-data text-sm font-semibold text-foreground">{fmtFredM(fedBS)}</p>
                   </div>
                   <div>
                     <p className="text-2xs text-gold-400">TGA</p>
