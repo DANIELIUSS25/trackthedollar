@@ -2,6 +2,7 @@
 import { fetchNationalDebt } from "@/lib/api/gov-data";
 import { LiveDebtCounter } from "@/components/shared/LiveDebtCounter";
 import { MobileLandingNav } from "@/components/shared/MobileLandingNav";
+import { SharePopover } from "@/components/shared/SharePopover";
 import Link from "next/link";
 import {
   DollarSign,
@@ -149,6 +150,7 @@ export default async function LandingPage() {
             >
               Go Pro ✦
             </Link>
+            <SharePopover />
             <Link
               href="/dashboard"
               className="rounded-lg bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground transition-colors hover:bg-primary/90 sm:px-4 sm:py-2"
