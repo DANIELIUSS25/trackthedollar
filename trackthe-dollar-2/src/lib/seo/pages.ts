@@ -623,6 +623,87 @@ const economyPages: SEOPage[] = [
   },
 ];
 
+// ─── TOOLS / SERIAL NUMBER ───────────────────────────────────────────────────
+
+const toolsPages: SEOPage[] = [
+  {
+    slug: "dollar-bill-serial-number-lookup",
+    title: "Dollar Bill Serial Number Lookup — What Does It Mean? 2026",
+    description:
+      "Decode your dollar bill serial number. Learn which Federal Reserve bank issued your bill, how to spot a rare star note, and what makes a fancy serial number valuable.",
+    h1: "What Does a Dollar Bill Serial Number Mean?",
+    intro:
+      "Every U.S. dollar bill has a unique serial number that encodes where it was printed, the production run it belongs to, and whether it's a rare replacement note called a star note. TrackTheDollar's free serial number lookup tool decodes any U.S. Federal Reserve Note in seconds.",
+    body: "U.S. dollar bill serial numbers follow a strict format set by the Bureau of Engraving and Printing (BEP). The first letter identifies one of the 12 Federal Reserve Bank districts — A for Boston, B for New York, all the way to L for San Francisco. The eight digits that follow are the sequential production number, and the final letter (or ★ star symbol) indicates the printing block. Bills ending in ★ are called star notes — replacement bills printed when a regular note is damaged during production. Star notes are significantly rarer than regular bills and are highly sought after by collectors.",
+    metric: "none",
+    category: "debt",
+    keywords: [
+      "dollar bill serial number lookup",
+      "what does serial number mean on dollar",
+      "dollar bill serial number decoder",
+      "how to read dollar bill serial number",
+    ],
+    faqs: [
+      {
+        q: "How do I find the serial number on a dollar bill?",
+        a: "The serial number appears twice on the face of the bill — once on the left side and once on the right. It consists of a letter, 8 digits, and another letter (or ★ for star notes). On $1 bills it's green; on larger denominations it may be in other colors.",
+      },
+      {
+        q: "What is a star note dollar bill?",
+        a: "A star note is a replacement bill printed by the Bureau of Engraving and Printing when a regular note is damaged during the printing process. Star notes have a ★ symbol at the end of their serial number instead of a letter. They are rarer than regular bills and are collected as a hobby.",
+      },
+      {
+        q: "What makes a dollar bill serial number rare or valuable?",
+        a: "Collectors prize 'fancy' serial numbers — these include solid notes (all same digit, e.g., 11111111), radar notes (palindromes), repeater notes (first 4 digits repeat in last 4), ladder notes (12345678 or 87654321), and low serial numbers (below 100). The rarer the pattern, the higher the collector premium.",
+      },
+      {
+        q: "Which Federal Reserve Bank issued my dollar bill?",
+        a: "The first letter of your serial number identifies the issuing Federal Reserve Bank: A=Boston, B=New York, C=Philadelphia, D=Cleveland, E=Richmond, F=Atlanta, G=Chicago, H=St. Louis, I=Minneapolis, J=Kansas City, K=Dallas, L=San Francisco.",
+      },
+    ],
+    relatedSlugs: ["national-debt-clock", "current-national-debt"],
+  },
+  {
+    slug: "star-note-checker",
+    title: "Star Note Checker — Is Your Dollar Bill a Rare Star Note? 2026",
+    description:
+      "Check if your dollar bill is a rare star note. Star notes are replacement bills worth more than face value to collectors. Use our free star note checker and serial number lookup.",
+    h1: "Star Note Checker — Is Your Dollar Bill Rare?",
+    intro:
+      "Star notes are replacement dollar bills printed by the U.S. Bureau of Engraving and Printing. They're identified by a ★ at the end of the serial number and are significantly rarer than regular bills. Use TrackTheDollar's free tool to check if your bill is a star note and estimate its collector value.",
+    body: "The Bureau of Engraving and Printing replaces damaged notes during the printing process with star notes — bills that have ★ instead of the final letter in their serial number. Because star notes are printed in much smaller quantities than regular notes, they command a premium among currency collectors (known as numismatists). The rarity of a specific star note depends on the denomination, the Federal Reserve district, the series year, and the size of the production run. Some star notes are printed in runs of just 640,000 while regular notes are printed by the hundreds of millions — making certain star notes worth $50 or more in fine condition.",
+    metric: "none",
+    category: "debt",
+    keywords: [
+      "star note checker",
+      "star note dollar bill",
+      "is my dollar bill rare",
+      "star note value",
+      "replacement note dollar bill",
+      "star note lookup",
+    ],
+    faqs: [
+      {
+        q: "How do I know if I have a star note?",
+        a: "Look at the serial number on your bill. If the last character is a ★ (star symbol) instead of a letter, you have a star note. Star notes are printed on all U.S. denominations from $1 to $100.",
+      },
+      {
+        q: "How much is a star note worth?",
+        a: "Most star notes are worth face value to slightly above in circulated condition. However, star notes from small production runs, low serial numbers, or in uncirculated condition can be worth $5 to $500+ depending on the denomination, series, and condition. $1 star notes from small runs and $100 star notes tend to command the highest premiums.",
+      },
+      {
+        q: "Why are star notes printed?",
+        a: "The Bureau of Engraving and Printing prints star notes as replacement bills when a regular note is damaged, misprinted, or destroyed during the printing process. Rather than disrupt the sequential serial number system, they insert star notes as substitutes.",
+      },
+      {
+        q: "Are star notes legal tender?",
+        a: "Yes, star notes are fully legal tender and can be spent like any other bill. Their value above face value is purely in the collector market for numismatists.",
+      },
+    ],
+    relatedSlugs: ["dollar-bill-serial-number-lookup", "national-debt-clock"],
+  },
+];
+
 // ─── MASTER EXPORT ───────────────────────────────────────────────────────────
 
 export const ALL_SEO_PAGES: SEOPage[] = [
@@ -634,6 +715,7 @@ export const ALL_SEO_PAGES: SEOPage[] = [
   ...moneyPages,
   ...spendingPages,
   ...economyPages,
+  ...toolsPages,
 ];
 
 export const SEO_PAGE_MAP = new Map(ALL_SEO_PAGES.map((p) => [p.slug, p]));
