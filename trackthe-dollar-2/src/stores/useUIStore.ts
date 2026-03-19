@@ -22,6 +22,9 @@ export const useUIStore = create<UIState>()(
       setAlertsOpen: (open) => set({ alertsOpen: open }),
       toggleAlerts: () => set((s) => ({ alertsOpen: !s.alertsOpen })),
     }),
-    { name: "ttd-ui" }
+    {
+      name: "ttd-ui-v2",
+      partialize: (s) => ({ sidebarOpen: s.sidebarOpen }), // don't persist alertsOpen
+    }
   )
 );
