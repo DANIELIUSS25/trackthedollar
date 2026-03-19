@@ -3,6 +3,8 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { QRCodeSVG } from "qrcode.react";
 import { Share2, Link, Camera, X, Check } from "lucide-react";
+import { useLocaleStore } from "@/stores/useLocaleStore";
+import { t } from "@/lib/i18n/translations";
 
 interface SharePopoverProps {
   /** Element to screenshot — defaults to document.body if omitted */
@@ -15,6 +17,7 @@ export function SharePopover({ screenshotTarget }: SharePopoverProps) {
   const [capturing, setCapturing] = useState(false);
   const [url, setUrl] = useState("");
   const popoverRef = useRef<HTMLDivElement>(null);
+  const { locale } = useLocaleStore();
 
   useEffect(() => {
     setUrl(window.location.href);
@@ -105,7 +108,7 @@ export function SharePopover({ screenshotTarget }: SharePopoverProps) {
         <div className="absolute right-0 top-10 z-50 w-72 rounded-xl border border-white/10 bg-[#111] shadow-2xl p-4 animate-fade-in">
           {/* Header */}
           <div className="flex items-center justify-between mb-4">
-            <span className="text-sm font-semibold text-white">Share</span>
+            <span className="text-sm font-semibold text-white">{t(locale, "share_title")}</span>
             <button onClick={() => setOpen(false)} className="text-white/40 hover:text-white/80">
               <X className="h-4 w-4" />
             </button>
@@ -136,12 +139,12 @@ export function SharePopover({ screenshotTarget }: SharePopoverProps) {
               {copied ? (
                 <>
                   <Check className="h-4 w-4 text-green-400" />
-                  <span className="text-green-400">Copied!</span>
+                  <span className="text-green-400">{t(locale, "share_copied")}</span>
                 </>
               ) : (
                 <>
                   <Link className="h-4 w-4" />
-                  Copy Link
+                  {t(locale, "share_copy")}
                 </>
               )}
             </button>
@@ -152,7 +155,7 @@ export function SharePopover({ screenshotTarget }: SharePopoverProps) {
               className="flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg bg-white/10 hover:bg-white/15 transition-colors text-sm font-medium text-white disabled:opacity-50"
             >
               <Camera className="h-4 w-4" />
-              {capturing ? "Capturing…" : "Screenshot"}
+              {capturing ? t(locale, "share_scanning") : t(locale, "share_screenshot")}
             </button>
 
             {canNativeShare && (
@@ -161,13 +164,13 @@ export function SharePopover({ screenshotTarget }: SharePopoverProps) {
                 className="col-span-2 flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg bg-indigo-600/80 hover:bg-indigo-600 transition-colors text-sm font-medium text-white"
               >
                 <Share2 className="h-4 w-4" />
-                Share via…
+                {t(locale, "share_via")}
               </button>
             )}
           </div>
 
           <p className="mt-3 text-center text-[10px] text-white/25">
-            Scan QR to open on any device
+            {t(locale, "share_scan_qr")}
           </p>
         </div>
       )}

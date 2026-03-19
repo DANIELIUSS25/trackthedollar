@@ -4,6 +4,8 @@ import { useUIStore } from "@/stores/useUIStore";
 import { cn } from "@/lib/utils/cn";
 import { Menu, Bell } from "lucide-react";
 import { SharePopover } from "@/components/shared/SharePopover";
+import { ThemeToggle } from "@/components/shared/ThemeToggle";
+import { LanguageSwitcher } from "@/components/shared/LanguageSwitcher";
 
 interface TopBarProps {
   title: string;
@@ -39,6 +41,8 @@ export function TopBar({ title, subtitle, children }: TopBarProps) {
       </div>
       <div className="flex items-center gap-2">
         {children}
+        <LanguageSwitcher />
+        <ThemeToggle />
         <SharePopover />
         <button
           onClick={toggleAlerts}

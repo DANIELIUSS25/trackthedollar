@@ -3,6 +3,8 @@ import { fetchNationalDebt } from "@/lib/api/gov-data";
 import { LiveDebtCounter } from "@/components/shared/LiveDebtCounter";
 import { MobileLandingNav } from "@/components/shared/MobileLandingNav";
 import { SharePopover } from "@/components/shared/SharePopover";
+import { ThemeToggle } from "@/components/shared/ThemeToggle";
+import { LanguageSwitcher } from "@/components/shared/LanguageSwitcher";
 import Link from "next/link";
 import {
   DollarSign,
@@ -144,6 +146,8 @@ export default async function LandingPage() {
             <Link href="/methodology" className="text-xs font-medium text-muted-foreground transition-colors hover:text-foreground">Methodology</Link>
           </nav>
           <div className="flex items-center gap-2">
+            <LanguageSwitcher />
+            <ThemeToggle />
             <Link
               href="/upgrade"
               className="hidden rounded-lg border border-primary/40 bg-primary/10 px-3 py-1.5 text-xs font-semibold text-primary transition-colors hover:bg-primary/20 sm:block"
