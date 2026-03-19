@@ -10,7 +10,7 @@ const cspHeader = `
   base-uri 'self';
   form-action 'self';
   frame-ancestors 'none';
-  frame-src https://js.stripe.com https://hooks.stripe.com https://googleads.g.doubleclick.net https://tpc.googlesyndication.com;
+  frame-src https://js.stripe.com https://hooks.stripe.com https://googleads.g.doubleclick.net https://tpc.googlesyndication.com https://*.adtrafficquality.google https://www.google.com;
   connect-src 'self' https://api.stripe.com https://*.sentry.io https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net https://*.adtrafficquality.google;
   upgrade-insecure-requests;
 `
