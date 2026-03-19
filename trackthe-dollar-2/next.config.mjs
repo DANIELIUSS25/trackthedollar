@@ -4,7 +4,7 @@ const cspHeader = `
   default-src 'self';
   script-src 'self' 'unsafe-eval' 'unsafe-inline' https://js.stripe.com https://pagead2.googlesyndication.com https://www.googletagservices.com https://partner.googleadservices.com https://tpc.googlesyndication.com https://*.adtrafficquality.google;
   style-src 'self' 'unsafe-inline';
-  img-src 'self' blob: data: https://*.stripe.com https://pagead2.googlesyndication.com https://tpc.googlesyndication.com https://www.google.com;
+  img-src 'self' blob: data: https://*.stripe.com https://pagead2.googlesyndication.com https://tpc.googlesyndication.com https://www.google.com https://*.adtrafficquality.google;
   font-src 'self';
   object-src 'none';
   base-uri 'self';
