@@ -1,10 +1,8 @@
 // src/app/(public)/page.tsx — Premium landing page for TrackTheDollar.com
 import { fetchNationalDebt } from "@/lib/api/gov-data";
 import { LiveDebtCounter } from "@/components/shared/LiveDebtCounter";
-import { MobileLandingNav } from "@/components/shared/MobileLandingNav";
-import { SharePopover } from "@/components/shared/SharePopover";
-import { ThemeToggle } from "@/components/shared/ThemeToggle";
-import { LanguageSwitcher } from "@/components/shared/LanguageSwitcher";
+import { LandingNav } from "@/components/landing/LandingNav";
+import { T } from "@/components/shared/T";
 import Link from "next/link";
 import {
   DollarSign,
@@ -139,31 +137,7 @@ export default async function LandingPage() {
               TrackThe<span className="text-primary">Dollar</span><span className="text-[11px] font-semibold text-primary/70">.com</span>
             </span>
           </Link>
-          <nav className="hidden items-center gap-6 md:flex">
-            <Link href="#features" className="text-xs font-medium text-muted-foreground transition-colors hover:text-foreground">Features</Link>
-            <Link href="#flows" className="text-xs font-medium text-muted-foreground transition-colors hover:text-foreground">Dollar Flows</Link>
-            <Link href="#research" className="text-xs font-medium text-muted-foreground transition-colors hover:text-foreground">Research</Link>
-            <Link href="/methodology" className="text-xs font-medium text-muted-foreground transition-colors hover:text-foreground">Methodology</Link>
-          </nav>
-          <div className="flex items-center gap-2">
-            <LanguageSwitcher />
-            <ThemeToggle />
-            <Link
-              href="/upgrade"
-              className="hidden rounded-lg border border-primary/40 bg-primary/10 px-3 py-1.5 text-xs font-semibold text-primary transition-colors hover:bg-primary/20 sm:block"
-            >
-              Go Pro ✦
-            </Link>
-            <SharePopover />
-            <Link
-              href="/dashboard"
-              className="rounded-lg bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground transition-colors hover:bg-primary/90 sm:px-4 sm:py-2"
-            >
-              Open Dashboard
-            </Link>
-            {/* Mobile menu button */}
-            <MobileLandingNav />
-          </div>
+          <LandingNav />
         </div>
       </header>
 
@@ -205,7 +179,7 @@ export default async function LandingPage() {
           <div className="mb-8 flex justify-center animate-reveal">
             <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5">
               <Zap className="h-3 w-3 text-primary" />
-              <span className="label-md text-primary">7 Government Data Sources. Zero Spin. Real-Time.</span>
+              <span className="label-md text-primary"><T>7 Government Data Sources. Zero Spin. Real-Time.</T></span>
             </div>
           </div>
 
@@ -245,7 +219,7 @@ export default async function LandingPage() {
               href="/dashboard"
               className="group inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-3 text-sm font-medium text-primary-foreground shadow-glow transition-all hover:bg-gold-500 hover:shadow-glow-strong"
             >
-              Open Dashboard
+              <T>Open Dashboard</T>
               <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
             </Link>
             <Link

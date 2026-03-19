@@ -12,6 +12,8 @@ export const SUPPORTED_LOCALES = [
   { code: "pt", label: "Português", flag: "🇧🇷" },
   { code: "ja", label: "日本語", flag: "🇯🇵" },
   { code: "ar", label: "العربية", flag: "🇸🇦" },
+  { code: "ru", label: "Русский", flag: "🇷🇺" },
+  { code: "lt", label: "Lietuvių", flag: "🇱🇹" },
 ] as const;
 
 interface LocaleState {
