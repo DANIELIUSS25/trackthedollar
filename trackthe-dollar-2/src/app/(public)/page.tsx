@@ -26,6 +26,8 @@ import {
   Globe,
   Layers,
   CheckCircle2,
+  Sparkles,
+  Search,
 } from "lucide-react";
 
 // ─── Static data (replaced by API in production) ─────────────────────────────
@@ -430,6 +432,58 @@ export default async function LandingPage() {
         </div>
       </section>
 
+      {/* ─── New Feature: Serial Number Checker ──────────────── */}
+      <section className="border-b border-border py-14">
+        <div className="mx-auto max-w-7xl px-6">
+          <Link
+            href="/tools/serial-number"
+            className="group relative flex flex-col items-start gap-6 overflow-hidden rounded-2xl border border-primary/20 bg-primary/5 p-8 transition-all duration-200 hover:border-primary/40 hover:bg-primary/8 hover:shadow-panel-raised md:flex-row md:items-center"
+          >
+            {/* NEW badge */}
+            <div className="absolute right-5 top-5 flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-3 py-1">
+              <Sparkles className="h-3 w-3 text-primary" />
+              <span className="label-sm font-semibold text-primary">NEW</span>
+            </div>
+
+            {/* Icon */}
+            <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary transition-colors group-hover:bg-primary/15">
+              <Search className="h-8 w-8" />
+            </div>
+
+            {/* Text */}
+            <div className="flex-1 pr-16 md:pr-0">
+              <p className="label-md mb-1 text-primary">Free Tool</p>
+              <h3 className="text-xl font-bold tracking-tight text-foreground">
+                Dollar Bill Serial Number Checker
+              </h3>
+              <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground">
+                Enter any U.S. dollar bill serial number to instantly decode the Federal Reserve district,
+                detect star notes, and discover if your bill has a fancy pattern — solid, radar, ladder,
+                repeater, and more — with a collector rarity score.
+              </p>
+              <div className="mt-4 flex flex-wrap gap-2">
+                {["Star Notes", "Fancy Serials", "Radar / Palindrome", "Rarity Score", "Fed District"].map((tag) => (
+                  <span
+                    key={tag}
+                    className="rounded-md border border-border bg-surface-2 px-2.5 py-0.5 text-2xs text-muted-foreground"
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            {/* CTA arrow */}
+            <div className="shrink-0">
+              <span className="inline-flex items-center gap-2 rounded-lg border border-primary/30 bg-primary/10 px-5 py-2.5 text-sm font-medium text-primary transition-all group-hover:bg-primary group-hover:text-primary-foreground">
+                Try It Free
+                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+              </span>
+            </div>
+          </Link>
+        </div>
+      </section>
+
       {/* ─── Dollar Flow Visualization ────────────────────────── */}
       <section id="flows" className="relative border-b border-border py-20">
         <div className="absolute inset-0 glow-gold-center" />
@@ -756,6 +810,12 @@ export default async function LandingPage() {
                 <li><Link href="/source-health" className="text-xs text-muted-foreground transition-colors hover:text-foreground">Source Health</Link></li>
                 <li><Link href="/monetary-expansion" className="text-xs text-muted-foreground transition-colors hover:text-foreground">Monetary Expansion</Link></li>
                 <li><Link href="/war-spending" className="text-xs text-muted-foreground transition-colors hover:text-foreground">War Spending</Link></li>
+                <li>
+                  <Link href="/tools/serial-number" className="inline-flex items-center gap-1 text-xs text-primary transition-colors hover:text-gold-300">
+                    Serial Number Checker
+                    <span className="rounded bg-primary/15 px-1 py-px text-[9px] font-semibold uppercase tracking-wide text-primary">new</span>
+                  </Link>
+                </li>
               </ul>
             </div>
           </div>
