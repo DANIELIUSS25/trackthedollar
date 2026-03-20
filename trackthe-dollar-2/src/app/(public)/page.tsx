@@ -4,6 +4,7 @@ import { LiveDebtCounter } from "@/components/shared/LiveDebtCounter";
 import { LandingNav } from "@/components/landing/LandingNav";
 import { T } from "@/components/shared/T";
 import Link from "next/link";
+import { prisma } from "@/lib/db/prisma";
 import {
   DollarSign,
   Landmark,
@@ -120,6 +121,14 @@ const FORECASTS = [
 export default async function LandingPage() {
   // Fetch live debt data server-side
   const debtData = await fetchNationalDebt();
+
+  // Fetch latest blog posts for the landing page teaser
+  const latestPosts = await prisma.blogPost.findMany({
+    where: { status: "PUBLISHED" },
+    orderBy: { publishedAt: "desc" },
+    select: { slug: true, title: true, description: true, category: true, readingTimeMin: true, publishedAt: true },
+    take: 3,
+  }).catch(() => []);
   // API returns raw dollars (e.g. 38_992_187_800_000); convert to millions for LiveDebtCounter
   const totalDebtMillions = (debtData.totalDebt ?? 39_000_000_000_000) / 1_000_000;
   const dailyChangeMillions = (debtData.dailyChange ?? 4_700_000_000) / 1_000_000;
@@ -660,6 +669,58 @@ export default async function LandingPage() {
         </div>
       </section>
 
+      {/* ─── Latest from the Blog ─────────────────────────────── */}
+      {latestPosts.length > 0 && (
+        <section className="border-b border-border py-20">
+          <div className="mx-auto max-w-7xl px-6">
+            <div className="mb-10 flex items-center justify-between">
+              <div>
+                <h2 className="text-display-md font-bold tracking-tight">From the Blog</h2>
+                <p className="mt-2 text-muted-foreground">
+                  Data-driven articles on the dollar, national debt, and the Fed.
+                </p>
+              </div>
+              <Link
+                href="/blog"
+                className="hidden items-center gap-1.5 text-xs font-medium text-primary transition-colors hover:text-gold-300 sm:flex"
+              >
+                All articles <ChevronRight className="h-3 w-3" />
+              </Link>
+            </div>
+            <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+              {latestPosts.map((post) => (
+                <Link
+                  key={post.slug}
+                  href={`/blog/${post.slug}`}
+                  className="group panel flex flex-col p-5 transition-all duration-200 hover:border-primary/20 hover:shadow-panel-raised"
+                >
+                  <span className="label-sm font-semibold text-primary uppercase">{post.category}</span>
+                  <h3 className="mt-2 text-sm font-semibold leading-snug text-foreground group-hover:text-primary">
+                    {post.title}
+                  </h3>
+                  <p className="mt-2 flex-1 text-xs leading-relaxed text-muted-foreground line-clamp-2">
+                    {post.description}
+                  </p>
+                  <div className="mt-4 flex items-center justify-between border-t border-border pt-3">
+                    <span className="text-2xs text-muted-foreground">
+                      {post.readingTimeMin ? `${post.readingTimeMin} min read` : ""}
+                    </span>
+                    <span className="inline-flex items-center gap-1 text-2xs font-medium text-primary opacity-0 transition-opacity group-hover:opacity-100">
+                      Read <ArrowRight className="h-2.5 w-2.5" />
+                    </span>
+                  </div>
+                </Link>
+              ))}
+            </div>
+            <div className="mt-6 text-center sm:hidden">
+              <Link href="/blog" className="inline-flex items-center gap-1 text-xs font-medium text-primary">
+                All articles <ChevronRight className="h-3 w-3" />
+              </Link>
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* ─── Trust / Source Strip ─────────────────────────────── */}
       <section className="border-b border-border bg-card/30 py-8">
         <div className="mx-auto max-w-7xl px-6">
@@ -809,6 +870,11 @@ export default async function LandingPage() {
               <p className="label-md mb-3 text-muted-foreground">Market Intelligence</p>
               <ul className="space-y-2">
                 <li><Link href="/dashboard" className="text-xs text-muted-foreground transition-colors hover:text-foreground">Dashboard</Link></li>
+                <li>
+                  <Link href="/blog" className="inline-flex items-center gap-1 text-xs text-muted-foreground transition-colors hover:text-foreground">
+                    Blog
+                  </Link>
+                </li>
                 <li><Link href="/debt" className="text-xs text-muted-foreground transition-colors hover:text-foreground">National Debt</Link></li>
                 <li><Link href="/dollar-strength" className="text-xs text-muted-foreground transition-colors hover:text-foreground">Dollar Strength</Link></li>
                 <li><Link href="/rates" className="text-xs text-muted-foreground transition-colors hover:text-foreground">Interest Rates</Link></li>

@@ -14,6 +14,7 @@ export function LandingNav() {
         <Link href="#features" className="text-xs font-medium text-muted-foreground transition-colors hover:text-foreground">{t("nav_features")}</Link>
         <Link href="#flows" className="text-xs font-medium text-muted-foreground transition-colors hover:text-foreground">{t("nav_flows")}</Link>
         <Link href="#research" className="text-xs font-medium text-muted-foreground transition-colors hover:text-foreground">{t("nav_research")}</Link>
+        <Link href="/blog" className="text-xs font-medium text-muted-foreground transition-colors hover:text-foreground">Blog</Link>
         <Link href="/methodology" className="text-xs font-medium text-muted-foreground transition-colors hover:text-foreground">{t("nav_methodology")}</Link>
       </nav>
       <div className="flex items-center gap-2">

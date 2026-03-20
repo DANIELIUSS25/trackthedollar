@@ -8,6 +8,8 @@ const NAV_LINKS = [
   { href: "#features", label: "Features" },
   { href: "#flows", label: "Dollar Flows" },
   { href: "#research", label: "Research" },
+  { href: "/blog", label: "Blog" },
+  { href: "/tools/serial-number", label: "Serial Number Checker ✦" },
   { href: "/methodology", label: "Methodology" },
   { href: "/upgrade", label: "Go Pro ✦" },
 ];

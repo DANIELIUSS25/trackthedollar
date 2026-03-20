@@ -209,6 +209,26 @@ export const JOB_SCHEDULES: JobSchedule[] = [
     timeoutMs: 300_000,
     maxRetries: 1,
   },
+
+  // ─── Blog Content ────────────────────────────────────────────
+  {
+    name: "blog-daily-news",
+    queue: "blog:generate",
+    cron: "0 10 * * *",
+    description: "Generate one news-driven blog post daily via Perplexity",
+    enabled: true,
+    timeoutMs: 120_000,
+    maxRetries: 2,
+  },
+  {
+    name: "blog-education-seed",
+    queue: "blog:generate",
+    cron: "0 11 * * 1",
+    description: "Seed up to 3 educational blog posts per week (Mon) if not yet created",
+    enabled: true,
+    timeoutMs: 300_000,
+    maxRetries: 1,
+  },
 ];
 
 /**
