@@ -1,9 +1,10 @@
 import type { MetadataRoute } from "next";
 import { ALL_SEO_PAGES } from "@/lib/seo/pages";
+import { prisma } from "@/lib/db/prisma";
 
 const BASE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://trackthedollar.com";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
 
   // Static public pages
@@ -13,6 +14,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: now,
       changeFrequency: "daily",
       priority: 1.0,
+    },
+    {
+      url: `${BASE_URL}/blog`,
+      lastModified: now,
+      changeFrequency: "daily",
+      priority: 0.9,
     },
     {
       url: `${BASE_URL}/dashboard`,
@@ -70,5 +77,24 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.8,
   }));
 
-  return [...staticPages, ...dashboardPages, ...topicPages];
+  // Blog posts — fetched live from DB
+  let blogPages: MetadataRoute.Sitemap = [];
+  try {
+    const posts = await prisma.blogPost.findMany({
+      where: { status: "PUBLISHED" },
+      select: { slug: true, updatedAt: true, category: true },
+      orderBy: { publishedAt: "desc" },
+    });
+
+    blogPages = posts.map((post) => ({
+      url: `${BASE_URL}/blog/${post.slug}`,
+      lastModified: post.updatedAt,
+      changeFrequency: post.category === "NEWS" ? ("daily" as const) : ("weekly" as const),
+      priority: post.category === "NEWS" ? 0.75 : 0.8,
+    }));
+  } catch {
+    // DB unavailable at build time — skip blog entries
+  }
+
+  return [...staticPages, ...dashboardPages, ...topicPages, ...blogPages];
 }
