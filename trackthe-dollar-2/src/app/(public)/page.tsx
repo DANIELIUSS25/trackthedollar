@@ -143,6 +143,21 @@ export default async function LandingPage() {
         </div>
       </header>
 
+      {/* ─── Announcement Bar ──────────────────────────────────── */}
+      <Link
+        href="/tools/serial-number"
+        className="group flex items-center justify-center gap-2.5 border-b border-primary/20 bg-primary/8 px-4 py-2 text-center transition-colors hover:bg-primary/12"
+      >
+        <Sparkles className="h-3 w-3 shrink-0 text-primary" />
+        <span className="text-xs text-foreground/80">
+          <span className="font-semibold text-primary">New:</span>{" "}
+          Free U.S. Dollar Bill Serial Number Checker — decode your bill&apos;s Fed district, star notes &amp; fancy serials
+        </span>
+        <span className="inline-flex items-center gap-1 text-xs font-medium text-primary transition-colors group-hover:text-gold-300">
+          Try it free <ArrowRight className="h-3 w-3" />
+        </span>
+      </Link>
+
       {/* ─── Ticker Strip ──────────────────────────────────────── */}
       <div className="ticker-container mask-fade-x border-b border-border bg-card/40">
         <div className="ticker-track flex items-center whitespace-nowrap py-2.5">
