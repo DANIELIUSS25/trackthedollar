@@ -288,7 +288,7 @@ export async function seedEducationalPosts(
     const result = await generateAndSaveBlogPost({
       topic: item.topic,
       category: item.category,
-      forceSlug: item.slug,
+      ...(item.slug !== undefined ? { forceSlug: item.slug } : {}),
     });
 
     if (result?.isNew) {
