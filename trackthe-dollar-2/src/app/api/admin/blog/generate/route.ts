@@ -79,7 +79,7 @@ export async function POST(req: NextRequest) {
       const result = await generateAndSaveBlogPost({
         topic,
         category,
-        forceSlug: slug,
+        ...(slug !== undefined ? { forceSlug: slug } : {}),
         ...(category === "NEWS" ? { searchRecency: "week" as const } : {}),
         force: true,
       });
