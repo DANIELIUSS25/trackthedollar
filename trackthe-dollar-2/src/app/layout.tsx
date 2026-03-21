@@ -99,6 +99,12 @@ export default function RootLayout({ children }: RootLayoutProps) {
       className="font-sans"
     >
       <head>
+        <link
+          rel="alternate"
+          type="application/rss+xml"
+          title="TrackTheDollar.com RSS Feed"
+          href="/rss.xml"
+        />
         <script
           async
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9686970386773995"

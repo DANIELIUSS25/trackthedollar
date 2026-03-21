@@ -34,8 +34,8 @@ export function LiveDebtCounter({
   const [display, setDisplay] = useState(baseUSD);
 
   useEffect(() => {
-    setDisplay(baseUSD + perSecondUSD * ((Date.now() - baseTime) / 1000));
     if (perSecondUSD <= 0) return;
+    setDisplay(baseUSD + perSecondUSD * ((Date.now() - baseTime) / 1000));
     const id = setInterval(() => {
       setDisplay(baseUSD + perSecondUSD * ((Date.now() - baseTime) / 1000));
     }, 100);
