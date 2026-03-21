@@ -343,11 +343,20 @@ export async function fetchNationalDebt() {
   const intragov = parseFloat(latest.intragov_hold_amt);
   const prevDebt = parseFloat(prev.tot_pub_debt_out_amt);
 
+  // Use a 30-day rolling average for dailyChange so the live counter never
+  // freezes on days when the Treasury debt dips day-over-day.
+  const window30 = records.length >= 30 ? records[29] : prev;
+  const debt30DaysAgo = parseFloat(window30.tot_pub_debt_out_amt);
+  const days30 = Math.max(records.length >= 30 ? 29 : 1, 1);
+  const avgDailyChange = (totalDebt - debt30DaysAgo) / days30;
+  // Fall back to single-day diff only if the 30-day average is non-positive
+  const dailyChange = avgDailyChange > 0 ? avgDailyChange : Math.max(totalDebt - prevDebt, 0);
+
   return {
     totalDebt,
     debtHeldByPublic: debtHeld,
     intragovernmental: intragov,
-    dailyChange: totalDebt - prevDebt,
+    dailyChange,
     changePercent: ((totalDebt - prevDebt) / prevDebt) * 100,
     series,
     lastDate: latest.record_date,
