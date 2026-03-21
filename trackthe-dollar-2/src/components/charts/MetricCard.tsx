@@ -16,7 +16,7 @@ interface MetricCardProps {
   unit?: string | undefined;
   sparkline?: TimeSeriesPoint[] | undefined;
   href?: string | undefined;
-  subtitle?: ReactNode;
+  subtitle?: ReactNode | undefined;
   className?: string | undefined;
 }
 
