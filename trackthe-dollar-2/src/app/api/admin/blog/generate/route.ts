@@ -80,7 +80,7 @@ export async function POST(req: NextRequest) {
         topic,
         category,
         forceSlug: slug,
-        searchRecency: category === "NEWS" ? "week" : undefined,
+        ...(category === "NEWS" ? { searchRecency: "week" as const } : {}),
         force: true,
       });
 
