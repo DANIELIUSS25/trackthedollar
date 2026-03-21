@@ -2,16 +2,16 @@
 
 const cspHeader = `
   default-src 'self';
-  script-src 'self' 'unsafe-eval' 'unsafe-inline' https://js.stripe.com https://pagead2.googlesyndication.com https://www.googletagservices.com https://partner.googleadservices.com https://tpc.googlesyndication.com https://*.adtrafficquality.google;
+  script-src 'self' 'unsafe-eval' 'unsafe-inline' https://js.stripe.com https://pagead2.googlesyndication.com https://www.googletagservices.com https://partner.googleadservices.com https://tpc.googlesyndication.com https://*.adtrafficquality.google https://securepubads.g.doubleclick.net https://www.googletagmanager.com;
   style-src 'self' 'unsafe-inline';
-  img-src 'self' blob: data: https://*.stripe.com https://pagead2.googlesyndication.com https://tpc.googlesyndication.com https://www.google.com https://*.adtrafficquality.google;
+  img-src 'self' blob: data: https://*.stripe.com https://pagead2.googlesyndication.com https://tpc.googlesyndication.com https://www.google.com https://*.adtrafficquality.google https://securepubads.g.doubleclick.net https://googleads.g.doubleclick.net;
   font-src 'self';
   object-src 'none';
   base-uri 'self';
   form-action 'self';
   frame-ancestors 'none';
-  frame-src https://js.stripe.com https://hooks.stripe.com https://googleads.g.doubleclick.net https://tpc.googlesyndication.com https://*.adtrafficquality.google https://www.google.com;
-  connect-src 'self' https://api.stripe.com https://*.sentry.io https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net https://*.adtrafficquality.google;
+  frame-src https://js.stripe.com https://hooks.stripe.com https://googleads.g.doubleclick.net https://tpc.googlesyndication.com https://*.adtrafficquality.google https://www.google.com https://securepubads.g.doubleclick.net;
+  connect-src 'self' https://api.stripe.com https://*.sentry.io https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net https://*.adtrafficquality.google https://securepubads.g.doubleclick.net https://sodar2.googlesyndication.com https://www.googletagmanager.com;
   upgrade-insecure-requests;
 `
   .replace(/\s{2,}/g, " ")
