@@ -289,7 +289,6 @@ export async function seedEducationalPosts(
       topic: item.topic,
       category: item.category,
       forceSlug: item.slug,
-      searchRecency: undefined, // no recency filter for evergreen educational content
     });
 
     if (result?.isNew) {
