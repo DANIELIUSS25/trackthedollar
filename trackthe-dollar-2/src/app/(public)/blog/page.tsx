@@ -54,7 +54,7 @@ export default async function BlogIndexPage() {
       readingTimeMin: true,
     },
     take: 50,
-  });
+  }).catch(() => []);
 
   const featured = posts[0];
   const rest = posts.slice(1);
